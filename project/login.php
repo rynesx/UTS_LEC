@@ -174,10 +174,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <form method="POST" action="">
                 <input type="email" id="email" name="email" placeholder="Email" required class="form-input">
                 <input type="password" id="password" name="password" placeholder="Password" required class="form-input">
-                <a href="#" class="text-sm text-blue-500 hover:underline">Forgot your password?</a>
+                <a href="forget_pw.php" class="text-sm text-blue-500 hover:underline">Forgot your password?</a>
                 <br><br>
                 <button type="submit" class="btn-submit">Sign In</button>
             </form>
+           
         </div>
 
         <!-- Bagian welcome kanan -->
