@@ -62,3 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
     <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Reset Password</button>
 </form>
+
+<div class="mt-4">
+<a href="javascript:history.back()" class="inline-block bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400">Back</a>
+</div>
