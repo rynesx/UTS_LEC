@@ -1,32 +1,47 @@
 <?php
+// Include file database dan fungsi
 require_once '../includes/db.php';
 require_once '../includes/functions.php';
+
+// Fungsi untuk membersihkan input pengguna
+function sanitizeInput($data) {
+    $data = trim($data);
+    $data = stripslashes($data);
+    $data = htmlspecialchars($data);
+    return $data;
+}
 
 $errors = [];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Sanitasi input email dari form
     $email = sanitizeInput($_POST['email']);
 
     // Cek jika email terdaftar di database
-    $user = dbQuery("SELECT * FROM users WHERE email = ?", [$email])->fetch_assoc();
+    $query = dbQuery("SELECT * FROM users WHERE email = ?", [$email]);
+    $user = $query->fetch_assoc();
 
     if ($user) {
-        // Generate token
+        // Generate token acak untuk reset password
         $token = bin2hex(random_bytes(16));
 
         // Simpan token dan waktu kedaluwarsa di database
         $expiration_time = date('Y-m-d H:i:s', strtotime('+30 minutes'));
-        dbQuery("INSERT INTO email_reset_tokens (email, token, expiration_time) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE token = ?, expiration_time = ?", [$email, $token, $expiration_time, $token, $expiration_time]);
+        dbQuery("INSERT INTO email_reset_tokens (email, token, expiration_time) VALUES (?, ?, ?) 
+                ON DUPLICATE KEY UPDATE token = ?, expiration_time = ?", 
+                [$email, $token, $expiration_time, $token, $expiration_time]);
 
-        // Redirect ke halaman reset dengan token
+        // Redirect ke halaman reset password dengan token
         header("Location: reset_pw.php?token=" . $token);
         exit();
     } else {
+        // Jika email tidak ditemukan, tampilkan error
         $errors[] = "Email not found. Please check again.";
     }
 }
 ?>
 
+<!-- HTML dan CSS untuk tampilan form lupa password -->
 <style>
     body {
         font-family: 'Arial', sans-serif;
@@ -194,6 +209,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <h2>Forgot Password</h2>
             <p>Enter your registered email</p>
 
+            <!-- Tampilkan error jika ada -->
             <?php if (!empty($errors)): ?>
                 <div class="error-message">
                     <ul>
@@ -204,6 +220,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
             <?php endif; ?>
 
+            <!-- Form untuk email -->
             <form method="POST" action="">
                 <input type="email" id="email" name="email" placeholder="Email" required class="form-input">
                 <button type="submit" class="btn-submit">Reset Password</button>
@@ -218,4 +235,3 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
     </div>
 </div>
-
