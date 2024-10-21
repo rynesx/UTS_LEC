@@ -1,41 +1,27 @@
 <?php
-session_start();
-
-function isLoggedIn() {
-    return isset($_SESSION['user_id']);
+if (session_status() == PHP_SESSION_NONE) {
+    session_start(); // Memulai sesi hanya jika belum ada sesi yang aktif
 }
+define('SITE_NAME', 'Webprog UTS'); // Definisikan nama situs
 
-function isAdmin() {
-    return isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin';
+function sanitize($data) {
+    global $conn;
+    return mysqli_real_escape_string($conn, htmlspecialchars($data));
 }
 
 function redirectIfNotLoggedIn() {
-    if (!isLoggedIn()) {
-        header('Location: login.php');
+    if (!isset($_SESSION['user_id'])) {
+        header("Location: login.php");
         exit();
     }
 }
 
-function redirectIfNotAdmin() {
-    if (!isAdmin()) {
-        header('Location: index.php');
-        exit();
-    }
+function redirect($url) {
+    header("Location: $url");
+    exit();
 }
 
-function sanitizeInput($input) {
-    return htmlspecialchars(strip_tags(trim($input)));
+function isLoggedIn() {
+    return isset($_SESSION['user_id']); // Memeriksa jika pengguna sudah login
 }
-
-function generateCSRFToken() {
-    if (!isset($_SESSION['csrf_token'])) {
-        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-    }
-    return $_SESSION['csrf_token'];
-}
-
-function validateCSRFToken($token) {
-    return isset($_SESSION['csrf_token']) && hash_equals($_SESSION['csrf_token'], $token);
-}
-
-define('SITE_NAME', 'Webprog UTS');
+?>

@@ -1,44 +1,30 @@
 <?php
-require_once 'config.php';
+$host = 'localhost';
+$db = 'concert_event_system';
+$user = 'root';
+$pass = '';
 
-function dbConnect() {
-    $conn = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
-    if ($conn->connect_error) {
-        die("Connection failed: " . $conn->connect_error);
-    }
-    return $conn;
+// Inisialisasi koneksi database
+$conn = new mysqli($host, $user, $pass, $db);
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
 }
 
-function dbQuery($sql, $params = []) {
-    $conn = dbConnect();
-    $stmt = $conn->prepare($sql);
+// Fungsi untuk menjalankan query dengan parameter
+function dbQuery($query, $params = []) {
+    global $conn;
+    $stmt = $conn->prepare($query);
     
-    if ($params) {
-        $types = str_repeat('s', count($params));
+    if (!empty($params)) {
+        $types = str_repeat('s', count($params)); // Asumsikan semua parameter adalah string
         $stmt->bind_param($types, ...$params);
     }
-    
+
     $stmt->execute();
+
+    // Menggunakan get_result untuk mengambil hasil query
     $result = $stmt->get_result();
-    $stmt->close();
-    $conn->close();
-    
     return $result;
 }
 
-function dbInsert($sql, $params = []) {
-    $conn = dbConnect();
-    $stmt = $conn->prepare($sql);
-    
-    if ($params) {
-        $types = str_repeat('s', count($params));
-        $stmt->bind_param($types, ...$params);
-    }
-    
-    $stmt->execute();
-    $insertId = $stmt->insert_id;
-    $stmt->close();
-    $conn->close();
-    
-    return $insertId;
-}
+?>
