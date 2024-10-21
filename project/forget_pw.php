@@ -1,5 +1,6 @@
 <?php
 require_once '../includes/db.php'; // Pastikan Anda memiliki koneksi ke database
+require_once '../includes/functions.php'; // Memasukkan file dengan fungsi
 
 $errors = [];
 $success_message = '';
@@ -14,8 +15,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Generate token
         $token = bin2hex(random_bytes(16)); // Menghasilkan token acak
         
-        // Simpan token di database atau di tabel terpisah
-        dbQuery("UPDATE users SET reset_token = ? WHERE email = ?", [$token, $email]);
+        // Simpan token dan waktu kedaluwarsa di database atau di tabel terpisah
+        $expiration_time = date('Y-m-d H:i:s', strtotime('+30 minutes'));
+        dbQuery("INSERT INTO email_reset_tokens (email, token, expiration_time) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE token = ?, expiration_time = ?", [$email, $token, $expiration_time, $token, $expiration_time]);
 
         // Redirect ke halaman reset dengan token
         header("Location: reset_pw.php?token=" . $token);

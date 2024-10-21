@@ -1,5 +1,6 @@
 <?php
-require_once '../includes/db.php';
+require_once '../includes/db.php'; // Pastikan ada koneksi ke database
+require_once '../includes/functions.php'; // Memasukkan file dengan fungsi sanitizeInput
 
 $errors = [];
 $success_message = '';
@@ -10,10 +11,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $token = sanitizeInput($_POST['token']);
 
     // Validasi token
-    $user = dbQuery("SELECT * FROM users WHERE reset_token = ?", [$token])->fetch_assoc();
-    
-    if (!$user) {
-        $errors[] = "Invalid token.";
+    $current_time = date('Y-m-d H:i:s');
+    $reset_token = dbQuery("SELECT * FROM email_reset_tokens WHERE token = ? AND expiration_time > ?", [$token, $current_time])->fetch_assoc();
+
+    if (!$reset_token) {
+        $errors[] = "Invalid token or token has expired.";
     }
 
     if (empty($password) || $password !== $confirm_password) {
@@ -21,9 +23,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if (empty($errors)) {
-        // Update password
         $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-        dbQuery("UPDATE users SET password = ?, reset_token = NULL WHERE reset_token = ?", [$hashed_password, $token]);
+        dbQuery("UPDATE users SET password = ? WHERE email = ?", [$hashed_password, $reset_token['email']]);
+
+        // Hapus token yang telah digunakan
+        dbQuery("DELETE FROM email_reset_tokens WHERE token = ?", [$token]);
 
         $success_message = "Your password has been reset successfully. You can now log in.";
     }
