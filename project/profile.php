@@ -9,11 +9,9 @@ $user = dbQuery("SELECT * FROM users WHERE id = ?", [$user_id])->fetch_assoc();
 
 $errors = [];
 $success_message = '';
-
-// Check if user data is fetched correctly
+$user_profile_picture = isset($user['profile_picture']) ? $user['profile_picture'] : '../uploads/default.png';
 $user_name = isset($user['name']) ? $user['name'] : '';
 $user_email = isset($user['email']) ? $user['email'] : '';
-$user_password = isset($user['password']) ? $user['password'] : null; // Get password if available
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name = sanitizeInput($_POST['name']);
@@ -22,7 +20,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $new_password = $_POST['new_password'] ?? '';
     $confirm_new_password = $_POST['confirm_new_password'] ?? '';
 
-    // Validate name and email
+    if (isset($_FILES['profile_picture']) && $_FILES['profile_picture']['error'] === UPLOAD_ERR_OK) {
+        $target_dir = "../uploads/";
+        $profile_picture = $target_dir . basename($_FILES["profile_picture"]["name"]);
+        
+        if (move_uploaded_file($_FILES["profile_picture"]["tmp_name"], $profile_picture)) {
+            // Successfully uploaded
+        } else {
+            $errors[] = "Failed to upload image.";
+        }
+    }
+
     if (empty($name) || empty($email)) {
         $errors[] = "Name and email are required.";
     }
@@ -31,9 +39,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors[] = "Invalid email format.";
     }
 
-    // Validate password change
     if (!empty($current_password) || !empty($new_password)) {
-        if ($user_password === null || !password_verify($current_password, $user_password)) {
+        if (empty($user_password) || !password_verify($current_password, $user_password)) {
             $errors[] = "Current password is incorrect.";
         }
 
@@ -46,7 +53,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    // Update profile if no errors
     if (empty($errors)) {
         $update_fields = ["name = ?", "email = ?"];
         $update_values = [$name, $email];
@@ -56,17 +62,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $update_values[] = password_hash($new_password, PASSWORD_DEFAULT);
         }
 
+        if (isset($profile_picture)) {
+            $update_fields[] = "profile_picture = ?";
+            $update_values[] = $profile_picture;
+        }
+
         $update_values[] = $user_id;
 
         $query = "UPDATE users SET " . implode(", ", $update_fields) . " WHERE id = ?";
         $result = dbQuery($query, $update_values);
-
+        
         if ($result) {
             $_SESSION['user_name'] = $name;
             $success_message = "Profile updated successfully.";
-            // Update user session values
             $user['name'] = $name;
             $user['email'] = $email;
+            $user_profile_picture = isset($profile_picture) ? $profile_picture : $user_profile_picture; // Update profil picture
         } else {
             $errors[] = "Failed to update profile.";
         }
@@ -74,7 +85,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 ?>
 
-<h2 class="text-3xl font-bold mb-6">Your Profile</h2>
+<div class="text-center mb-6">
+    <img src="<?php echo htmlspecialchars($user_profile_picture); ?>" alt="Profile Picture" class="rounded-full w-32 h-32 mb-4">
+    <h2 class="text-3xl font-bold">Your Profile</h2>
+</div>
 
 <?php if (!empty($errors)): ?>
     <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
@@ -93,7 +107,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 <?php endif; ?>
 
-<form method="POST" action="" class="max-w-md mx-auto">
+<form method="POST" action="" enctype="multipart/form-data" class="max-w-md mx-auto">
+    <div class="mb-4">
+        <label for="profile_picture" class="block mb-2">Profile Picture (optional)</label>
+        <input type="file" id="profile_picture" name="profile_picture" accept="image/*" class="w-full px-3 py-2 border rounded">
+    </div>
     <div class="mb-4">
         <label for="name" class="block mb-2">Name</label>
         <input type="text" id="name" name="name" value="<?php echo htmlspecialchars($user_name); ?>" required class="w-full px-3 py-2 border rounded">
