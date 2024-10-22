@@ -50,27 +50,32 @@ $user = $result->fetch_assoc();
                 </tr>
             </thead>
             <tbody>
-            <form action="register_event.php" method="POST">
-                <button type="submit" class="bg-pink-500 text-white px-4 py-2 rounded hover:bg-blue-600">Register Concert</button>
+    <?php
+    // Mengambil acara yang terdaftar oleh pengguna
+    $registrations = $conn->query("SELECT events.id, events.name, events.date, events.location FROM registrations INNER JOIN events ON registrations.event_id = events.id WHERE registrations.user_id = $user_id");
+    
+    if ($registrations->num_rows > 0) {
+        while ($event = $registrations->fetch_assoc()): 
+    ?>
+    <tr>
+        <td class="py-2 border-b border-gray-200"><?php echo htmlspecialchars($event['name']); ?></td>
+        <td class="py-2 border-b border-gray-200"><?php echo htmlspecialchars(date('d M Y', strtotime($event['date']))); ?></td>
+        <td class="py-2 border-b border-gray-200"><?php echo htmlspecialchars($event['location']); ?></td>
+        <td class="py-2 border-b border-gray-200">
+            <!-- Form untuk redirect ke event_detail dengan event_id -->
+            <form action="../includes/event_detail.php" method="GET">
+                <input type="hidden" name="id" value="<?php echo htmlspecialchars($event['id']); ?>">
+                <button type="submit" class="bg-pink-500 text-white px-4 py-2 rounded hover:bg-blue-600">View Event</button>
             </form>
-                <?php
-                // Mengambil acara yang terdaftar oleh pengguna
-                $registrations = $conn->query("SELECT events.name, events.date, events.location FROM registrations INNER JOIN events ON registrations.event_id = events.id WHERE registrations.user_id = $user_id");
-                
-                if ($registrations->num_rows > 0) {
-                    while ($event = $registrations->fetch_assoc()): 
-                ?>
-                <tr>
-                    <td class="py-2 border-b border-gray-200"><?php echo htmlspecialchars($event['name']); ?></td>
-                    <td class="py-2 border-b border-gray-200"><?php echo htmlspecialchars(date('d M Y', strtotime($event['date']))); ?></td>
-                    <td class="py-2 border-b border-gray-200"><?php echo htmlspecialchars($event['location']); ?></td>
-                </tr>
-                <?php endwhile; 
-                } else {
-                    echo "<tr><td colspan='3' class='py-2 text-center'>No registered events found.</td></tr>";
-                }
-                ?>
-            </tbody>
+        </td>
+    </tr>
+    <?php endwhile; 
+    } else {
+        echo "<tr><td colspan='4' class='py-2 text-center'>No registered events found.</td></tr>";
+    }
+    ?>
+</tbody>
+
         </table>
     </div>
 </div>

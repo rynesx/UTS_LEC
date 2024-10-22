@@ -23,7 +23,7 @@ require_once 'includes/header.php';
                     <h3 class="text-xl font-semibold mb-2"><?php echo htmlspecialchars($event['name']); ?></h3>
                     <p class="text-gray-600 mb-2"><?php echo htmlspecialchars($event['date']) . ' ' . htmlspecialchars(date('H:i', strtotime($event['date']))); ?></p>
                     <p class="text-gray-600 mb-4"><?php echo htmlspecialchars($event['location']); ?></p>
-                    <a href="event_details.php?id=<?php echo $event['id']; ?>" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">View Details</a>
+                    <a href="includes/event_detail.php?id=<?php echo $event['id']; ?>" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">View Details</a>
                 </div>
             </div>
         <?php endwhile; ?>

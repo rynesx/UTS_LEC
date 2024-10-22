@@ -24,4 +24,27 @@ function redirect($url) {
 function isLoggedIn() {
     return isset($_SESSION['user_id']); // Memeriksa jika pengguna sudah login
 }
+
+function dbInsert($query, $params = []) {
+    global $conn;
+    $stmt = $conn->prepare($query);
+
+    if ($stmt === false) {
+        die("Error preparing query: " . $conn->error);
+    }
+
+    if (!empty($params)) {
+        $types = str_repeat('s', count($params)); // Asumsikan semua parameter adalah string
+        $stmt->bind_param($types, ...$params);
+    }
+
+    $result = $stmt->execute();
+
+    if ($result === false) {
+        die("Error executing query: " . $stmt->error);
+    }
+
+    return $stmt->affected_rows > 0;  // Mengembalikan true jika ada baris yang terpengaruh
+}
+
 ?>
