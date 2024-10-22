@@ -20,11 +20,12 @@ if (isset($_GET['search'])) {
 
 <h2 class="text-3xl font-bold mb-6">Upcoming Concerts</h2>
 
-<form action="index.php" method="GET" style="display: flex; align-items: center; margin-left: 20px;">
+<div style="display: flex; align-items: right; margin-left: 75%;">
+    <form action="index.php" method="GET" >
     <input type="text" name="search" placeholder="Search concerts..." value="<?php echo htmlspecialchars($search_query); ?>" required style="padding: 10px; border-radius: 5px; border: 1px solid #ccc;">
-    <button type="submit" style="background-color: #ff1493; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">Search</button>
-</form>
-
+    <button type="submit" style="background-color: #9372ff; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">Search</button>
+    </form>
+</div>
 
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
     <?php if ($events->num_rows > 0): ?>
