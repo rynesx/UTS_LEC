@@ -18,7 +18,7 @@ $user_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
 if ($user_id === 0 || $user_id === $admin_id) {
     $_SESSION['error'] = "Invalid user ID or attempting to delete admin account";
-    redirect('manage_users.php');
+    redirect('user_management.php');
 }
 
 // Begin transaction
@@ -45,5 +45,5 @@ try {
     $_SESSION['error'] = "Error deleting user: " . $e->getMessage();
 }
 
-redirect('manage_users.php');
+redirect('user_management.php');
 ?>

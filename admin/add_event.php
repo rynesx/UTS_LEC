@@ -1,111 +1,198 @@
-<?php
-require '../includes/db.php';
-require '../includes/functions.php';
-
-// Handle form submission
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $name = sanitize($_POST['name']);
-    $date = $_POST['date'];
-    // Extract time from the datetime-local input
-    $time = date('H:i:s', strtotime($_POST['date'])); // Get only the time part
-    $location = sanitize($_POST['location']);
-    $description = sanitize($_POST['description']);
-    $max_participants = intval($_POST['max_participants']);
-    
-    // Handle image upload
-    $image_path = null;
-    if (isset($_FILES['image']) && $_FILES['image']['error'] == UPLOAD_ERR_OK) {
-        // Create uploads directory if it doesn't exist
-        if (!file_exists('uploads')) {
-            mkdir('uploads', 0777, true);
-        }
-        
-        // Upload new image
-        $image_path = 'uploads/' . basename($_FILES["image"]["name"]);
-        move_uploaded_file($_FILES["image"]["tmp_name"], $image_path);
-        
-        // Insert with image
-        $stmt = $conn->prepare("INSERT INTO events (name, date, time, location, description, max_participants, image_path) VALUES (?, ?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("sssssis", $name, $date, $time, $location, $description, $max_participants, $image_path);
-    } else {
-        // Insert without image
-        $stmt = $conn->prepare("INSERT INTO events (name, date, time, location, description, max_participants) VALUES (?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("ssssis", $name, $date, $time, $location, $description, $max_participants);
-    }
-    
-    if ($stmt->execute()) {
-        header('Location: ../index.php');
-        exit;
-    } else {
-        $error = "Error adding event: " . $stmt->error;
-    }
-}
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Add New Event</title>
-    <link rel="stylesheet" href="path/to/tailwind.css">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .form-container {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 800px;
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 24px;
+            font-weight: 500;
+        }
+
+        .error-message {
+            background-color: #FEE2E2;
+            border: 1px solid #FCA5A5;
+            color: #DC2626;
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .left-column {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .right-column {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 0;
+        }
+
+        input[type="text"],
+        input[type="date"],
+        input[type="time"],
+        input[type="number"],
+        textarea,
+        input[type="file"] {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 30px;
+            font-size: 16px;
+            color: #333;
+            background: transparent;
+            outline: none;
+            box-sizing: border-box;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        input::placeholder {
+            color: #aaa;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        button[type="submit"], .cancel-button {
+            padding: 15px 40px;
+            border: none;
+            border-radius: 30px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            text-align: center;
+            text-decoration: none;
+            min-width: 150px;
+        }
+
+        button[type="submit"] {
+            background-color: #7E57C2;
+            color: white;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #6A48B0;
+        }
+
+        .cancel-button {
+            background-color: #e0e0e0;
+            color: #333;
+        }
+
+        .cancel-button:hover {
+            background-color: #d0d0d0;
+        }
+
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .form-container {
+                margin: 20px;
+                padding: 20px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <div class="container mx-auto px-4 py-6">
-        <h2 class="text-2xl font-bold mb-4">Add New Event</h2>
+    <div class="form-container">
+        <h2>Add New Event</h2>
         
         <?php if (isset($error)): ?>
-            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+            <div class="error-message">
                 <?php echo htmlspecialchars($error); ?>
             </div>
         <?php endif; ?>
 
-        <form method="post" enctype="multipart/form-data" class="space-y-4">
-            <div>
-                <label class="block">Event Name</label>
-                <input type="text" name="name" required 
-                       class="w-full p-2 border rounded"
-                       value="<?php echo isset($_POST['name']) ? htmlspecialchars($_POST['name']) : ''; ?>">
+        <form method="post" enctype="multipart/form-data" action="add_event.php">
+            <div class="form-grid">
+                <div class="left-column">
+                    <div class="form-group">
+                        <input type="text" name="name" placeholder="Event Name" required 
+                               value="<?php echo isset($_POST['name']) ? htmlspecialchars($_POST['name']) : ''; ?>">
+                    </div>
+
+                    <div class="form-group">
+                        <input type="date" name="date" required 
+                               value="<?php echo isset($_POST['date']) ? htmlspecialchars($_POST['date']) : ''; ?>">
+                    </div>
+
+                    <div class="form-group">
+                        <input type="time" name="time" required 
+                               value="<?php echo isset($_POST['time']) ? htmlspecialchars($_POST['time']) : ''; ?>">
+                    </div>
+
+                    <div class="form-group">
+                        <input type="text" name="location" placeholder="Location" required 
+                               value="<?php echo isset($_POST['location']) ? htmlspecialchars($_POST['location']) : ''; ?>">
+                    </div>
+                </div>
+
+                <div class="right-column">
+                    <div class="form-group">
+                        <textarea name="description" placeholder="Description" required><?php echo isset($_POST['description']) ? htmlspecialchars($_POST['description']) : ''; ?></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <input type="number" name="max_participants" placeholder="Max Participants" required 
+                               value="<?php echo isset($_POST['max_participants']) ? htmlspecialchars($_POST['max_participants']) : ''; ?>">
+                    </div>
+
+                    <div class="form-group">
+                        <input type="file" name="image">
+                    </div>
+                </div>
             </div>
 
-            <div>
-                <label class="block">Date and Time</label>
-                <input type="datetime-local" name="date" required 
-                       class="w-full p-2 border rounded"
-                       value="<?php echo isset($_POST['date']) ? htmlspecialchars($_POST['date']) : ''; ?>">
-            </div>
-
-            <div>
-                <label class="block">Location</label>
-                <input type="text" name="location" required 
-                       class="w-full p-2 border rounded"
-                       value="<?php echo isset($_POST['location']) ? htmlspecialchars($_POST['location']) : ''; ?>">
-            </div>
-
-            <div>
-                <label class="block">Description</label>
-                <textarea name="description" required 
-                          class="w-full p-2 border rounded"><?php echo isset($_POST['description']) ? htmlspecialchars($_POST['description']) : ''; ?></textarea>
-            </div>
-
-            <div>
-                <label class="block">Max Participants</label>
-                <input type="number" name="max_participants" required 
-                       class="w-full p-2 border rounded"
-                       value="<?php echo isset($_POST['max_participants']) ? htmlspecialchars($_POST['max_participants']) : ''; ?>">
-            </div>
-
-            <div>
-                <label class="block">Image</label>
-                <input type="file" name="image" class="w-full p-2 border rounded">
-            </div>
-
-            <div class="flex gap-4">
-                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
-                    Add Event
-                </button>
-                <a href="index.php" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">
-                    Cancel
-                </a>
+            <div class="button-group">
+                <button type="submit">Add Event</button>
+                <a href="../index.php" class="cancel-button">Cancel</a>
             </div>
         </form>
     </div>
