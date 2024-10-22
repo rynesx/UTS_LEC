@@ -3,10 +3,6 @@ session_start();
 require '../includes/db.php';
 require '../includes/functions.php';
 
-if (!isset($_SESSION['admin_id'])) {
-    redirect('../login.php');
-}
-
 $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
 if ($id === 0) {
@@ -30,7 +26,7 @@ $stmt = $conn->prepare("DELETE FROM events WHERE id = ?");
 $stmt->bind_param("i", $id);
 
 if ($stmt->execute()) {
-    header('Location: index.php');
+    header('Location: ../index.php');
     exit;
 } else {
     die('Error deleting event');

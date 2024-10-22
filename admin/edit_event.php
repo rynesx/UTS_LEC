@@ -1,11 +1,6 @@
 <?php
-session_start();
 require '../includes/db.php';
 require '../includes/functions.php';
-
-if (!isset($_SESSION['admin_id'])) {
-    redirect('../login.php');
-}
 
 $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
@@ -17,6 +12,7 @@ if ($id === 0) {
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $name = sanitize($_POST['name']);
     $date = $_POST['date'];
+    $time = $_POST['time'];
     $location = sanitize($_POST['location']);
     $description = sanitize($_POST['description']);
     $max_participants = intval($_POST['max_participants']);
@@ -37,20 +33,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
         
         // Upload new image
-        $image_path = 'uploads/' . basename($_FILES["image"]["name"]);
+        $image_path = '../uploads/' . basename($_FILES["image"]["name"]);
         move_uploaded_file($_FILES["image"]["tmp_name"], $image_path);
         
         // Update with new image
-        $stmt = $conn->prepare("UPDATE events SET name = ?, date = ?, location = ?, description = ?, max_participants = ?, image_path = ? WHERE id = ?");
-        $stmt->bind_param("ssssisi", $name, $date, $location, $description, $max_participants, $image_path, $id);
+        $stmt = $conn->prepare("UPDATE events SET name = ?, date = ?, time = ?, location = ?, description = ?, max_participants = ?, image_path = ? WHERE id = ?");
+        $stmt->bind_param("sssssis", $name, $date, $time, $location, $description, $max_participants, $image_path, $id);
     } else {
         // Update without changing image
-        $stmt = $conn->prepare("UPDATE events SET name = ?, date = ?, location = ?, description = ?, max_participants = ? WHERE id = ?");
-        $stmt->bind_param("ssssii", $name, $date, $location, $description, $max_participants, $id);
+        $stmt = $conn->prepare("UPDATE events SET name = ?, date = ?, time = ?, location = ?, description = ?, max_participants = ? WHERE id = ?");
+        $stmt->bind_param("ssssiii", $name, $date, $time, $location, $description, $max_participants, $id);
     }
     
+    
     if ($stmt->execute()) {
-        header('Location: index.php');
+        header('Location: ../index.php');
         exit;
     } else {
         $error = "Error updating event";
@@ -101,6 +98,12 @@ if (!$event) {
             </div>
 
             <div>
+                <label class="block">Time</label>
+                <input type="time" name="time" value="<?php echo htmlspecialchars($event['time']); ?>" required 
+                       class="w-full p-2 border rounded">
+            </div>
+
+            <div>
                 <label class="block">Location</label>
                 <input type="text" name="location" value="<?php echo htmlspecialchars($event['location']); ?>" required 
                        class="w-full p-2 border rounded">
@@ -125,14 +128,12 @@ if (!$event) {
                 <input type="file" name="image" class="w-full p-2 border rounded">
             </div>
 
-            <div class="flex gap-4">
-                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
-                    Update Event
-                </button>
-                <a href="index.php" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">
-                    Cancel
-                </a>
-            </div>
+            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                Update Event
+            </button>
+            <a href="../index.php" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">
+                Cancel
+            </a>
         </form>
     </div>
 </body>

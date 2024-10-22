@@ -13,6 +13,7 @@ $success_message = '';
 $user_profile_picture = isset($user['profile_picture']) ? $user['profile_picture'] : '../uploads/default.png';
 $user_name = isset($user['name']) ? $user['name'] : '';
 $user_email = isset($user['email']) ? $user['email'] : '';
+$user_password = $user['password'] ?? ''; // Ambil password dari database
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name = sanitizeInput($_POST['name']);
@@ -25,9 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $target_dir = "../uploads/";
         $profile_picture = $target_dir . basename($_FILES["profile_picture"]["name"]);
         
-        if (move_uploaded_file($_FILES["profile_picture"]["tmp_name"], $profile_picture)) {
-            // Successfully uploaded
-        } else {
+        if (!move_uploaded_file($_FILES["profile_picture"]["tmp_name"], $profile_picture)) {
             $errors[] = "Failed to upload image.";
         }
     }
@@ -78,7 +77,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $success_message = "Profile updated successfully.";
             $user['name'] = $name;
             $user['email'] = $email;
-            $user_profile_picture = isset($profile_picture) ? $profile_picture : $user_profile_picture; // Update profil picture
+            $user_profile_picture = isset($profile_picture) ? $profile_picture : $user_profile_picture; // Update profile picture
         } else {
             $errors[] = "Failed to update profile.";
         }
@@ -89,7 +88,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <div class="flex justify-center mb-6">
     <img src="<?php echo htmlspecialchars($user_profile_picture); ?>" alt="Profile Picture" class="rounded-full w-32 h-32 mb-4">
 </div>
-
 
 <?php if (!empty($errors)): ?>
     <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
@@ -121,11 +119,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <label for="email" class="block mb-2">Email</label>
         <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($user_email); ?>" required class="w-full px-3 py-2 border rounded">
     </div>
-    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Update Profile</button>
-    <form action="forgot_pw.php" method="POST">
-        <button type="submit" class="bg-pink-500 text-white px-4 py-2 rounded hover:bg-blue-600">Reset Password</button>
-    </form>
-
+    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Update Profile</button> 
 </form>
+<form action="../includes/forget_pw.php" method="GET" class="max-w-md mx-auto mt-4">
+    <button type="submit" class="bg-pink-500 text-white px-4 py-2 rounded hover:bg-pink-600">Reset Password</button>
+</form> 
 
 <?php require_once '../includes/footer.php'; ?>

@@ -62,13 +62,13 @@ $totalRegistrations = $conn->query("SELECT COUNT(*) as count FROM registrations"
                 </a>
             </div>
             <div class="px-6 py-3 hover:bg-gray-700 cursor-pointer">
-                <a href="manage_events.php" class="flex items-center">
+                <a href="event_management.php" class="flex items-center">
                     <i class="fas fa-calendar-alt mr-3"></i>
                     Manage Events
                 </a>
             </div>
             <div class="px-6 py-3 hover:bg-gray-700 cursor-pointer">
-                <a href="manage_users.php" class="flex items-center">
+                <a href="user_management.php" class="flex items-center">
                     <i class="fas fa-users mr-3"></i>
                     Manage Users
                 </a>
@@ -125,10 +125,10 @@ $totalRegistrations = $conn->query("SELECT COUNT(*) as count FROM registrations"
             <div class="bg-white rounded-lg shadow p-6">
                 <h2 class="text-xl font-semibold mb-4">Event Management</h2>
                 <div class="space-y-4">
-                    <a href="manage_events.php" class="block bg-blue-500 text-white rounded px-4 py-2 text-center hover:bg-blue-600">
+                    <a href="event_management.php" class="block bg-blue-500 text-white rounded px-4 py-2 text-center hover:bg-blue-600">
                         View All Events
                     </a>
-                    <a href="add_event.php" class="block bg-green-500 text-white rounded px-4 py-2 text-center hover:bg-green-600">
+                    <a href="edit_event.php" class="block bg-green-500 text-white rounded px-4 py-2 text-center hover:bg-green-600">
                         Add New Event
                     </a>
                 </div>
@@ -136,10 +136,10 @@ $totalRegistrations = $conn->query("SELECT COUNT(*) as count FROM registrations"
             <div class="bg-white rounded-lg shadow p-6">
                 <h2 class="text-xl font-semibold mb-4">User Management</h2>
                 <div class="space-y-4">
-                    <a href="manage_users.php" class="block bg-purple-500 text-white rounded px-4 py-2 text-center hover:bg-purple-600">
+                    <a href="user_management.php" class="block bg-purple-500 text-white rounded px-4 py-2 text-center hover:bg-purple-600">
                         Manage Users
                     </a>
-                    <a href="event_registrations.php" class="block bg-indigo-500 text-white rounded px-4 py-2 text-center hover:bg-indigo-600">
+                    <a href="../index.php" class="block bg-indigo-500 text-white rounded px-4 py-2 text-center hover:bg-indigo-600">
                         View Registrations
                     </a>
                 </div>

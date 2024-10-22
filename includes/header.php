@@ -41,10 +41,6 @@ function getUserRole() {
                     ?> 
                         <li><a href="<?php echo $dashboardUrl; ?>" class="hover:underline">Dashboard</a></li>
                         <li><a href="/UTS_LEC/user/profile.php" class="hover:underline">Profile</a></li>
-                        <?php if ($userRole === 'admin'): ?>
-                            <li><a href="/UTS_LEC/admin/manage_users.php" class="hover:underline">Manage Users</a></li>
-                            <li><a href="/UTS_LEC/admin/manage_events.php" class="hover:underline">Manage Events</a></li>
-                        <?php endif; ?>
                         <li><a href="/UTS_LEC/user/logout.php" class="hover:underline">Logout</a></li>
                     <?php else: ?> 
                         <li><a href="/UTS_LEC/login.php" class="hover:underline">Login</a></li> 

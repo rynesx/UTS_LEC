@@ -5,6 +5,10 @@ require_once '../includes/functions.php'; // Memasukkan file dengan fungsi sanit
 $errors = [];
 $success_message = '';
 
+function sanitizeInput($data) {
+    return htmlspecialchars(stripslashes(trim($data)));
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = $_POST['password'];
     $confirm_password = $_POST['confirm_password'];
@@ -33,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $success_message = "Your password has been reset successfully. Redirecting to login page...";
 
         // Redirect ke halaman login setelah beberapa detik
-        header("refresh:5;url=login.php");
+        header("refresh:5;url=../login.php");
     }
 }
 ?>

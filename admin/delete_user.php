@@ -3,11 +3,6 @@ session_start();
 require '../includes/db.php';
 require '../includes/functions.php';
 
-// Validasi admin
-if (!isset($_SESSION['user_id'])) {
-    redirect('../login.php');
-}
-
 $admin_id = $_SESSION['user_id'];
 $stmt = $conn->prepare("SELECT role FROM users WHERE id = ?");
 $stmt->bind_param("i", $admin_id);
