@@ -8,9 +8,23 @@ if ($events === false) {
 }
 
 require_once 'includes/header.php';
+
+$search_query = '';
+if (isset($_GET['search'])) {
+    $search_query = sanitizeInput($_GET['search']);
+    $events = dbQuery("SELECT * FROM events WHERE name LIKE ? AND status = 'open' ORDER BY date ASC", ['%' . $search_query . '%']);
+} else {
+    $events = dbQuery("SELECT * FROM events WHERE status = 'open' ORDER BY date ASC");
+}
 ?>
 
 <h2 class="text-3xl font-bold mb-6">Upcoming Concerts</h2>
+
+<form action="index.php" method="GET" style="display: flex; align-items: center; margin-left: 20px;">
+    <input type="text" name="search" placeholder="Search concerts..." value="<?php echo htmlspecialchars($search_query); ?>" required style="padding: 10px; border-radius: 5px; border: 1px solid #ccc;">
+    <button type="submit" style="background-color: #ff1493; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">Search</button>
+</form>
+
 
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
     <?php if ($events->num_rows > 0): ?>
