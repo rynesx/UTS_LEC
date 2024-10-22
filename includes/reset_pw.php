@@ -5,10 +5,6 @@ require_once '../includes/functions.php'; // Memasukkan file dengan fungsi sanit
 $errors = [];
 $success_message = '';
 
-function sanitizeInput($data) {
-    return htmlspecialchars(stripslashes(trim($data)));
-}
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = $_POST['password'];
     $confirm_password = $_POST['confirm_password'];

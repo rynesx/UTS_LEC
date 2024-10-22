@@ -3,14 +3,6 @@
 require_once '../includes/db.php';
 require_once '../includes/functions.php';
 
-// Fungsi untuk membersihkan input pengguna
-function sanitizeInput($data) {
-    $data = trim($data);
-    $data = stripslashes($data);
-    $data = htmlspecialchars($data);
-    return $data;
-}
-
 $errors = [];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
