@@ -48,7 +48,7 @@ try {
     $stmt->execute();
 
     // Hapus registrasi acara pengguna dari event_registrations jika ada
-    $stmt = $conn->prepare("DELETE FROM event_registrations WHERE user_id = ?");
+    $stmt = $conn->prepare("DELETE FROM registrations WHERE user_id = ?");
     $stmt->bind_param("i", $user_id);
     $stmt->execute();
 
