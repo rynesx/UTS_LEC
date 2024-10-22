@@ -117,7 +117,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         .btn-submit,
         .btn-signup {
-            background-color: #7E60BF; /* Warna tombol */
+            background-color: #9B7EBD; /* Warna tombol */
             color: white;
             padding: 10px 20px;
             border: none;
@@ -129,7 +129,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         .btn-submit:hover {
             background-color: white;
-            color: #7E60BF;
+            color: #9B7EBD;
             text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.3); /* Efek timbul pada hover */
         }
 
@@ -144,7 +144,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         .btn-signup:hover {
-            background-color: #7E60BF;
+            background-color: #9B7EBD;
             color: white;
             text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.3);
         }
