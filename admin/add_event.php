@@ -144,12 +144,31 @@
     <div class="form-container">
         <h2>Add New Event</h2>
         
-        <?php if (isset($error)): ?>
-            <div class="error-message">
-                <?php echo htmlspecialchars($error); ?>
-            </div>
-        <?php endif; ?>
+        <?php
+// Ini bagian di mana Anda memproses upload file
+if (isset($_FILES['image']) && $_FILES['image']['error'] == UPLOAD_ERR_OK) {
+    $target_dir = "uploads/";
+    // Dapatkan nama file dan buat menjadi lebih aman
+    $original_filename = basename($_FILES["image"]["name"]);
+    $new_filename = preg_replace('/[^a-zA-Z0-9-_\.]/', '_', $original_filename); // Hanya izinkan karakter tertentu
+    $target_file = $target_dir . $new_filename;
 
+    // Cek apakah direktori ada, jika tidak buat
+    if (!is_dir($target_dir)) {
+        mkdir($target_dir, 0777, true);
+    }
+
+    // Pindahkan file
+    if (move_uploaded_file($_FILES["image"]["tmp_name"], $target_file)) {
+        $image_path = $target_file; // Simpan jalur gambar untuk disimpan di database
+    } else {
+        $error = "Maaf, ada kesalahan saat mengupload gambar.";
+    }
+} else {
+    $error = "Gagal mengupload file, error: " . $_FILES['image']['error'];
+}
+
+?>
         <form method="post" enctype="multipart/form-data" action="add_event.php">
             <div class="form-grid">
                 <div class="left-column">
