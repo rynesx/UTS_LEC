@@ -29,7 +29,7 @@ if ($user['role'] !== 'admin') {
 // Get quick stats
 $totalUsers = $conn->query("SELECT COUNT(*) as count FROM users")->fetch_assoc()['count'];
 $totalEvents = $conn->query("SELECT COUNT(*) as count FROM events")->fetch_assoc()['count'];
-$totalRegistrations = $conn->query("SELECT COUNT(*) as count FROM event_registrations")->fetch_assoc()['count'];
+$totalRegistrations = $conn->query("SELECT COUNT(*) as count FROM registrations")->fetch_assoc()['count'];
 ?>
 
 <!DOCTYPE html>
