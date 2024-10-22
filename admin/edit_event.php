@@ -2,7 +2,6 @@
 require '../includes/db.php';
 require '../includes/functions.php';
 
-
 $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
 if ($id === 0) {
@@ -17,38 +16,44 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $location = sanitize($_POST['location']);
     $description = sanitize($_POST['description']);
     $max_participants = intval($_POST['max_participants']);
+
+    // Get existing image path
+    $stmt = $conn->prepare("SELECT image_path FROM events WHERE id = ?");
+    $stmt->bind_param("i", $id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $event = $result->fetch_assoc();
     
-    // Handle image upload
-    $image_path = null;
+    $image_path = $event['image_path'];  // Keep the current image path
+
+    // Handle image upload if a new one is provided
     if (isset($_FILES['image']) && $_FILES['image']['error'] == UPLOAD_ERR_OK) {
-        // Get existing image path
-        $stmt = $conn->prepare("SELECT image_path FROM events WHERE id = ?");
-        $stmt->bind_param("i", $id);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $event = $result->fetch_assoc();
-        
-        // Delete old image if exists
-        if ($event['image_path'] && file_exists($event['image_path'])) {
-            unlink($event['image_path']);
+        $upload_dir = '../uploads/';
+        if (!file_exists($upload_dir)) {
+            mkdir($upload_dir, 0755, true);
         }
-        
-        // Upload new image
-        $image_path = '../uploads/' . basename($_FILES["image"]["name"]);
-        move_uploaded_file($_FILES["image"]["tmp_name"], $image_path);
-        
-        // Update with new image
-        $stmt = $conn->prepare("UPDATE events SET name = ?, date = ?, time = ?, location = ?, description = ?, max_participants = ?, image_path = ? WHERE id = ?");
-        $stmt->bind_param("sssssiis", $name, $date, $time, $location, $description, $max_participants, $image_path, $id);
-    } else {
-        // Update without changing image
-        $stmt = $conn->prepare("UPDATE events SET name = ?, date = ?, time = ?, location = ?, description = ?, max_participants = ? WHERE id = ?");
-        $stmt->bind_param("sssssii", $name, $date, $time, $location, $description, $max_participants, $id);
+
+        // Generate a unique filename
+        $file_extension = pathinfo($_FILES["image"]["name"], PATHINFO_EXTENSION);
+        $new_filename = uniqid() . '.' . $file_extension;
+        $new_image_path = $upload_dir . $new_filename;
+
+        if (move_uploaded_file($_FILES["image"]["tmp_name"], $new_image_path)) {
+            // Delete old image if exists
+            if ($event['image_path'] && file_exists($event['image_path'])) {
+                unlink($event['image_path']);
+            }
+            $image_path = $new_image_path;
+        } else {
+            $error = "Failed to upload the image.";
+        }
     }
-    
-    // Execute query
+
+    // Update event
+    $stmt = $conn->prepare("UPDATE events SET name = ?, date = ?, time = ?, location = ?, description = ?, max_participants = ?, image_path = ? WHERE id = ?");
+    $stmt->bind_param("sssssssi", $name, $date, $time, $location, $description, $max_participants, $image_path, $id);
+
     if ($stmt->execute()) {
-        // Redirect to index.php after successful update
         header('Location: ../index.php');
         exit;
     } else {
@@ -108,13 +113,7 @@ if (!$event) {
             margin-bottom: 30px;
         }
 
-        .left-column {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .right-column {
+        .left-column, .right-column {
             display: flex;
             flex-direction: column;
             gap: 20px;
@@ -239,7 +238,7 @@ if (!$event) {
                     </div>
 
                     <div class="form-group">
-                        <input type="file" name="image">
+                        <input type="file" name="image" accept="image/*">
                         <?php if ($event['image_path']): ?>
                             <img src="<?php echo htmlspecialchars($event['image_path']); ?>" alt="Current event image" class="preview-image">
                         <?php endif; ?>
@@ -248,7 +247,7 @@ if (!$event) {
             </div>
 
             <div class="button-group">
-                <button type="submit">Update Profile</button>
+                <button type="submit">Update Event</button>
                 <a href="../index.php" class="cancel-button">Cancel</a>
             </div>
         </form>

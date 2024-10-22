@@ -1,8 +1,96 @@
+<?php
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+
+require_once(__DIR__ . '/../includes/functions.php');
+require_once(__DIR__ . '/../includes/db.php');
+
+// Check if user is logged in
+redirectIfNotLoggedIn();
+
+// Initialize variables
+$error = '';
+$success = '';
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    try {
+        // Validate and sanitize inputs using your existing function
+        $name = sanitizeInput($_POST['name'] ?? '');
+        $date = sanitizeInput($_POST['date'] ?? '');
+        $time = sanitizeInput($_POST['time'] ?? '');
+        $location = sanitizeInput($_POST['location'] ?? '');
+        $description = sanitizeInput($_POST['description'] ?? '');
+        $max_participants = (int)sanitizeInput($_POST['max_participants'] ?? 0);
+        $image_path = null;
+
+        // Validate required fields
+        if (empty($name) || empty($date) || empty($time) || empty($location) || empty($description) || $max_participants <= 0) {
+            throw new Exception('All fields are required and max participants must be greater than 0.');
+        }
+
+        // Handle image upload
+        if (isset($_FILES['image']) && $_FILES['image']['error'] == UPLOAD_ERR_OK) {
+            $upload_dir = __DIR__ . '/uploads/';
+            
+            // Create uploads directory if it doesn't exist
+            if (!file_exists($upload_dir)) {
+                mkdir($upload_dir, 0755, true);
+            }
+
+            // Validate file type
+            $allowed_types = ['image/jpeg', 'image/png', 'image/gif'];
+            $file_type = $_FILES['image']['type'];
+            
+            if (!in_array($file_type, $allowed_types)) {
+                throw new Exception('Invalid file type. Only JPG, PNG and GIF files are allowed.');
+            }
+
+            // Generate safe filename
+            $file_extension = pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION);
+            $new_filename = uniqid() . '.' . $file_extension;
+            $target_file = $upload_dir . $new_filename;
+
+            // Move uploaded file
+            if (!move_uploaded_file($_FILES['image']['tmp_name'], $target_file)) {
+                throw new Exception('Failed to upload image.');
+            }
+
+            $image_path = 'uploads/' . $new_filename;
+        }
+
+        // Using your dbInsert function
+        $query = "INSERT INTO events (name, date, time, location, description, max_participants, image_path, created_at) 
+                 VALUES (?, ?, ?, ?, ?, ?, ?, NOW())";
+        
+        $params = [
+            $name,
+            $date,
+            $time,
+            $location,
+            $description,
+            $max_participants,
+            $image_path
+        ];
+
+        if (dbInsert($query, $params)) {
+            $_SESSION['success_message'] = 'Event created successfully!';
+            redirect('../index.php');
+        } else {
+            throw new Exception('Failed to create event. Please try again.');
+        }
+
+    } catch (Exception $e) {
+        $error = $e->getMessage();
+    }
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Add New Event</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add New Event - <?php echo SITE_NAME; ?></title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -21,6 +109,7 @@
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             width: 100%;
             max-width: 800px;
+            margin: 20px;
         }
 
         h2 {
@@ -41,6 +130,16 @@
             text-align: center;
         }
 
+        .success-message {
+            background-color: #D1FAE5;
+            border: 1px solid #6EE7B7;
+            color: #047857;
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
         .form-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -48,93 +147,90 @@
             margin-bottom: 30px;
         }
 
-        .left-column {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .right-column {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
         .form-group {
-            margin-bottom: 0;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #374151;
+            font-weight: 500;
         }
 
         input[type="text"],
         input[type="date"],
         input[type="time"],
         input[type="number"],
-        textarea,
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #D1D5DB;
+            border-radius: 8px;
+            font-size: 16px;
+            color: #1F2937;
+        }
+
         input[type="file"] {
             width: 100%;
-            padding: 15px;
-            border: 1px solid #e0e0e0;
-            border-radius: 30px;
-            font-size: 16px;
-            color: #333;
-            background: transparent;
-            outline: none;
-            box-sizing: border-box;
+            padding: 10px;
+            border: 2px dashed #D1D5DB;
+            border-radius: 8px;
+            cursor: pointer;
         }
 
         textarea {
             resize: vertical;
-            min-height: 100px;
-        }
-
-        input::placeholder {
-            color: #aaa;
+            min-height: 120px;
         }
 
         .button-group {
             display: flex;
             justify-content: center;
             gap: 20px;
-            margin-top: 20px;
+            margin-top: 30px;
         }
 
-        button[type="submit"], .cancel-button {
-            padding: 15px 40px;
-            border: none;
-            border-radius: 30px;
+        button[type="submit"],
+        .cancel-button {
+            padding: 12px 24px;
+            border-radius: 8px;
             font-size: 16px;
+            font-weight: 500;
             cursor: pointer;
-            transition: background-color 0.3s;
-            text-align: center;
             text-decoration: none;
-            min-width: 150px;
+            display: inline-block;
+            text-align: center;
+            min-width: 120px;
         }
 
         button[type="submit"] {
-            background-color: #7E57C2;
+            background-color: #6366F1;
             color: white;
+            border: none;
         }
 
         button[type="submit"]:hover {
-            background-color: #6A48B0;
+            background-color: #4F46E5;
         }
 
         .cancel-button {
-            background-color: #e0e0e0;
-            color: #333;
+            background-color: #F3F4F6;
+            color: #4B5563;
+            border: 1px solid #D1D5DB;
         }
 
         .cancel-button:hover {
-            background-color: #d0d0d0;
+            background-color: #E5E7EB;
         }
 
         @media (max-width: 768px) {
             .form-grid {
                 grid-template-columns: 1fr;
-                gap: 20px;
             }
             
             .form-container {
-                margin: 20px;
+                margin: 10px;
                 padding: 20px;
             }
         }
@@ -144,73 +240,61 @@
     <div class="form-container">
         <h2>Add New Event</h2>
         
-        <?php
-// Ini bagian di mana Anda memproses upload file
-if (isset($_FILES['image']) && $_FILES['image']['error'] == UPLOAD_ERR_OK) {
-    $target_dir = "uploads/";
-    // Dapatkan nama file dan buat menjadi lebih aman
-    $original_filename = basename($_FILES["image"]["name"]);
-    $new_filename = preg_replace('/[^a-zA-Z0-9-_\.]/', '_', $original_filename); // Hanya izinkan karakter tertentu
-    $target_file = $target_dir . $new_filename;
+        <?php if ($error): ?>
+            <div class="error-message">
+                <?php echo htmlspecialchars($error); ?>
+            </div>
+        <?php endif; ?>
 
-    // Cek apakah direktori ada, jika tidak buat
-    if (!is_dir($target_dir)) {
-        mkdir($target_dir, 0777, true);
-    }
-
-    // Pindahkan file
-    if (move_uploaded_file($_FILES["image"]["tmp_name"], $target_file)) {
-        $image_path = $target_file; // Simpan jalur gambar untuk disimpan di database
-    } else {
-        $error = "Maaf, ada kesalahan saat mengupload gambar.";
-    }
-} else {
-    $error = "Gagal mengupload file, error: " . $_FILES['image']['error'];
-}
-
-?>
-        <form method="post" enctype="multipart/form-data" action="add_event.php">
+        <form method="post" enctype="multipart/form-data" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>">
             <div class="form-grid">
                 <div class="left-column">
                     <div class="form-group">
-                        <input type="text" name="name" placeholder="Event Name" required 
+                        <label for="name">Event Name</label>
+                        <input type="text" id="name" name="name" required 
                                value="<?php echo isset($_POST['name']) ? htmlspecialchars($_POST['name']) : ''; ?>">
                     </div>
 
                     <div class="form-group">
-                        <input type="date" name="date" required 
+                        <label for="date">Date</label>
+                        <input type="date" id="date" name="date" required 
                                value="<?php echo isset($_POST['date']) ? htmlspecialchars($_POST['date']) : ''; ?>">
                     </div>
 
                     <div class="form-group">
-                        <input type="time" name="time" required 
+                        <label for="time">Time</label>
+                        <input type="time" id="time" name="time" required 
                                value="<?php echo isset($_POST['time']) ? htmlspecialchars($_POST['time']) : ''; ?>">
                     </div>
 
                     <div class="form-group">
-                        <input type="text" name="location" placeholder="Location" required 
+                        <label for="location">Location</label>
+                        <input type="text" id="location" name="location" required 
                                value="<?php echo isset($_POST['location']) ? htmlspecialchars($_POST['location']) : ''; ?>">
                     </div>
                 </div>
 
                 <div class="right-column">
                     <div class="form-group">
-                        <textarea name="description" placeholder="Description" required><?php echo isset($_POST['description']) ? htmlspecialchars($_POST['description']) : ''; ?></textarea>
+                        <label for="description">Description</label>
+                        <textarea id="description" name="description" required><?php echo isset($_POST['description']) ? htmlspecialchars($_POST['description']) : ''; ?></textarea>
                     </div>
 
                     <div class="form-group">
-                        <input type="number" name="max_participants" placeholder="Max Participants" required 
+                        <label for="max_participants">Maximum Participants</label>
+                        <input type="number" id="max_participants" name="max_participants" min="1" required 
                                value="<?php echo isset($_POST['max_participants']) ? htmlspecialchars($_POST['max_participants']) : ''; ?>">
                     </div>
 
                     <div class="form-group">
-                        <input type="file" name="image">
+                        <label for="image">Event Image</label>
+                        <input type="file" id="image" name="image" accept="image/jpeg,image/png,image/gif">
                     </div>
                 </div>
             </div>
 
             <div class="button-group">
-                <button type="submit">Add Event</button>
+                <button type="submit">Create Event</button>
                 <a href="../index.php" class="cancel-button">Cancel</a>
             </div>
         </form>
