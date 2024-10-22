@@ -9,6 +9,14 @@ function sanitize($data) {
     return mysqli_real_escape_string($conn, htmlspecialchars($data));
 }
 
+function sanitizeInput($data) {
+    $data = trim($data);
+    $data = stripslashes($data);
+    $data = htmlspecialchars($data);
+    return $data;
+}
+
+
 function redirectIfNotLoggedIn() {
     if (!isset($_SESSION['user_id'])) {
         header("Location: login.php");

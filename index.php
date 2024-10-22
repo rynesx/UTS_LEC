@@ -11,7 +11,7 @@ require_once 'includes/header.php';
 
 $search_query = '';
 if (isset($_GET['search'])) {
-    $search_query = sanitizeInput($_GET['search']);
+    $search_query = sanitizeInput($_GET['search']); // Penggunaan fungsi sanitizeInput
     $events = dbQuery("SELECT * FROM events WHERE name LIKE ? AND status = 'open' ORDER BY date ASC", ['%' . $search_query . '%']);
 } else {
     $events = dbQuery("SELECT * FROM events WHERE status = 'open' ORDER BY date ASC");
