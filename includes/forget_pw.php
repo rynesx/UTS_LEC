@@ -223,7 +223,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="welcome-box">
             <h2>Remember Password?</h2>
             <p>If you remember your password, please login with your personal info</p>
-            <a href="login.php" class="btn-signup">Sign In</a>
+            <a href="../login.php" class="btn-signup">Sign In</a>
         </div>
     </div>
 </div>
