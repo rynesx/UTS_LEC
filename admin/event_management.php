@@ -35,8 +35,8 @@ $events = $conn->query("SELECT * FROM events ORDER BY date DESC");
     <?php require '../includes/header.php'; ?>
 
     <div class="container mx-auto px-4 py-8">
-        <div class="flex justify-between items-center mb-6">
-            <h1 class="text-2xl font-bold">Manage Events</h1>
+        <div class="flex flex-col md:flex-row justify-between items-center mb-6">
+            <h1 class="text-2xl font-bold mb-4 md:mb-0">Manage Events</h1>
             <a href="add_event.php" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Add New Event</a>
         </div>
 
@@ -49,7 +49,7 @@ $events = $conn->query("SELECT * FROM events ORDER BY date DESC");
             </div>
         <?php endif; ?>
 
-        <div class="bg-white rounded-lg shadow overflow-hidden">
+        <div class="bg-white rounded-lg shadow overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
                     <tr>
@@ -67,9 +67,9 @@ $events = $conn->query("SELECT * FROM events ORDER BY date DESC");
                         <td class="px-6 py-4 whitespace-nowrap">
                             <?php if ($event['image_path']): ?>
                                 <img src="<?php echo htmlspecialchars($event['image_path']); ?>" 
-                                     alt="Event image" class="h-20 w-20 object-cover rounded">
+                                     alt="Event image" class="h-20 w-20 md:h-24 md:w-24 object-cover rounded">
                             <?php else: ?>
-                                <div class="h-20 w-20 bg-gray-200 rounded flex items-center justify-center">
+                                <div class="h-20 w-20 md:h-24 md:w-24 bg-gray-200 rounded flex items-center justify-center">
                                     <span class="text-gray-500">No image</span>
                                 </div>
                             <?php endif; ?>
@@ -81,9 +81,9 @@ $events = $conn->query("SELECT * FROM events ORDER BY date DESC");
                             <a href="view_participants.php?event_id=<?php echo $event['id']; ?>" 
                                class="text-indigo-600 hover:text-indigo-900">View Participants</a>
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium flex flex-col md:flex-row items-start md:items-center">
                             <a href="edit_event.php?id=<?php echo $event['id']; ?>" 
-                               class="text-indigo-600 hover:text-indigo-900 mr-3">Edit</a>
+                               class="text-indigo-600 hover:text-indigo-900 mr-3 mb-2 md:mb-0">Edit</a>
                             <button onclick="confirmDelete(<?php echo $event['id']; ?>)" 
                                     class="text-red-600 hover:text-red-900">Delete</button>
                         </td>

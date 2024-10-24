@@ -13,56 +13,43 @@ $success_message = '';
 $user_profile_picture = isset($user['profile_picture']) ? $user['profile_picture'] : '../uploads/default.png';
 $user_name = isset($user['name']) ? $user['name'] : '';
 $user_email = isset($user['email']) ? $user['email'] : '';
-$user_password = $user['password'] ?? ''; // Ambil password dari database
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name = sanitizeInput($_POST['name']);
     $email = sanitizeInput($_POST['email']);
-    $current_password = $_POST['current_password'] ?? '';
-    $new_password = $_POST['new_password'] ?? '';
-    $confirm_new_password = $_POST['confirm_new_password'] ?? '';
+    $profile_picture = '';
 
+    // Handle file upload
     if (isset($_FILES['profile_picture']) && $_FILES['profile_picture']['error'] === UPLOAD_ERR_OK) {
         $target_dir = "../uploads/";
         $profile_picture = $target_dir . basename($_FILES["profile_picture"]["name"]);
-        
+
         if (!move_uploaded_file($_FILES["profile_picture"]["tmp_name"], $profile_picture)) {
             $errors[] = "Failed to upload image.";
+        } else {
+            // Verifikasi apakah file berhasil diupload
+            if (!file_exists($profile_picture)) {
+                $errors[] = "Image upload failed or file does not exist.";
+            }
         }
     }
 
+    // Validasi nama dan email
     if (empty($name) || empty($email)) {
         $errors[] = "Name and email are required.";
     }
 
+    // Validasi format email
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $errors[] = "Invalid email format.";
     }
 
-    if (!empty($current_password) || !empty($new_password)) {
-        if (empty($user_password) || !password_verify($current_password, $user_password)) {
-            $errors[] = "Current password is incorrect.";
-        }
-
-        if (strlen($new_password) < 8) {
-            $errors[] = "New password must be at least 8 characters long.";
-        }
-
-        if ($new_password !== $confirm_new_password) {
-            $errors[] = "New passwords do not match.";
-        }
-    }
-
+    // Jika tidak ada error, lakukan update ke database
     if (empty($errors)) {
         $update_fields = ["name = ?", "email = ?"];
         $update_values = [$name, $email];
 
-        if (!empty($new_password)) {
-            $update_fields[] = "password = ?";
-            $update_values[] = password_hash($new_password, PASSWORD_DEFAULT);
-        }
-
-        if (isset($profile_picture)) {
+        if (!empty($profile_picture)) {
             $update_fields[] = "profile_picture = ?";
             $update_values[] = $profile_picture;
         }
@@ -71,20 +58,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $query = "UPDATE users SET " . implode(", ", $update_fields) . " WHERE id = ?";
         $result = dbQuery($query, $update_values);
-        
+
         if ($result) {
+            // Update session dan user data
             $_SESSION['user_name'] = $name;
             $success_message = "Profile updated successfully.";
             $user['name'] = $name;
             $user['email'] = $email;
-            $user_profile_picture = isset($profile_picture) ? $profile_picture : $user_profile_picture; // Update profile picture
+            $user_profile_picture = !empty($profile_picture) ? $profile_picture : $user_profile_picture;
+            $errors = [];
         } else {
-            $errors[] = "Failed to update profile.";
+            // Tambahkan pesan error dari database
+            $errors[] = "Failed to update profile: " . $conn->error;
         }
     }
 }
 ?>
 
+<!-- HTML Form -->
 <div class="flex justify-center mb-6">
     <img src="<?php echo htmlspecialchars($user_profile_picture); ?>" alt="Profile Picture" class="rounded-full w-32 h-32 mb-4">
 </div>
@@ -121,8 +112,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
     <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Update Profile</button> 
 </form>
+
 <form action="../includes/forget_pw.php" method="GET" class="max-w-md mx-auto mt-4">
     <button type="submit" class="bg-pink-500 text-white px-4 py-2 rounded hover:bg-pink-600">Reset Password</button>
-</form> 
+</form>
 
 <?php require_once '../includes/footer.php'; ?>
