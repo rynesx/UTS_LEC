@@ -26,7 +26,7 @@ $stmt = $conn->prepare("DELETE FROM events WHERE id = ?");
 $stmt->bind_param("i", $id);
 
 if ($stmt->execute()) {
-    header('Location: ../index.php');
+    header('Location: ../admin/view_registration.php');
     exit;
 } else {
     die('Error deleting event');

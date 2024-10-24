@@ -21,30 +21,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Handle file upload
     if (isset($_FILES['profile_picture']) && $_FILES['profile_picture']['error'] === UPLOAD_ERR_OK) {
-        $target_dir = "../uploads/";
-        $profile_picture = $target_dir . basename($_FILES["profile_picture"]["name"]);
+        // Set target directory for profile pictures
+        $target_dir = "../uploads/profile_pictures/";
+        if (!file_exists($target_dir)) {
+            mkdir($target_dir, 0755, true);
+        }
+        
+        $profile_picture = $target_dir . uniqid() . '_' . basename($_FILES["profile_picture"]["name"]);
 
         if (!move_uploaded_file($_FILES["profile_picture"]["tmp_name"], $profile_picture)) {
             $errors[] = "Failed to upload image.";
         } else {
-            // Verifikasi apakah file berhasil diupload
+            // Verify that the file was successfully uploaded
             if (!file_exists($profile_picture)) {
                 $errors[] = "Image upload failed or file does not exist.";
             }
         }
     }
 
-    // Validasi nama dan email
+    // Validate name and email
     if (empty($name) || empty($email)) {
         $errors[] = "Name and email are required.";
     }
 
-    // Validasi format email
+    // Validate email format
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $errors[] = "Invalid email format.";
     }
 
-    // Jika tidak ada error, lakukan update ke database
+    // If no errors, proceed to update the database
     if (empty($errors)) {
         $update_fields = ["name = ?", "email = ?"];
         $update_values = [$name, $email];
@@ -60,7 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $result = dbQuery($query, $update_values);
 
         if ($result) {
-            // Update session dan user data
+            // Update session and user data
             $_SESSION['user_name'] = $name;
             $success_message = "Profile updated successfully.";
             $user['name'] = $name;
@@ -68,7 +73,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $user_profile_picture = !empty($profile_picture) ? $profile_picture : $user_profile_picture;
             $errors = [];
         } else {
-            // Tambahkan pesan error dari database
+            // Add error message from database
             $errors[] = "Failed to update profile: " . $conn->error;
         }
     }

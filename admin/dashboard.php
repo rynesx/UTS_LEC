@@ -145,7 +145,7 @@ $totalRegistrations = $conn->query("SELECT COUNT(*) as count FROM registrations"
                     <a href="user_management.php" class="block bg-purple-500 text-white rounded px-4 py-2 text-center hover:bg-purple-600">
                         Manage Users
                     </a>
-                    <a href="../index.php" class="block bg-indigo-500 text-white rounded px-4 py-2 text-center hover:bg-indigo-600">
+                    <a href="view_registration.php" class="block bg-indigo-500 text-white rounded px-4 py-2 text-center hover:bg-indigo-600">
                         View Registrations
                     </a>
                 </div>

@@ -31,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         // Handle image upload
         if (isset($_FILES['image']) && $_FILES['image']['error'] == UPLOAD_ERR_OK) {
-            $upload_dir = __DIR__ . '/uploads/';
+            $upload_dir = __DIR__ . '/../uploads/events/'; // Ganti ke folder events
             
             // Create uploads directory if it doesn't exist
             if (!file_exists($upload_dir)) {
@@ -56,7 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 throw new Exception('Failed to upload image.');
             }
 
-            $image_path = 'uploads/' . $new_filename;
+            $image_path = 'uploads/events/' . $new_filename; // Path yang disimpan di database
         }
 
         // Using your dbInsert function
@@ -75,7 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         if (dbInsert($query, $params)) {
             $_SESSION['success_message'] = 'Event created successfully!';
-            redirect('../index.php');
+            redirect('view_registration.php');
         } else {
             throw new Exception('Failed to create event. Please try again.');
         }
@@ -234,7 +234,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 padding: 20px;
             }
         }
-    </style>
+        </style>
 </head>
 <body>
     <div class="form-container">
@@ -295,7 +295,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
             <div class="button-group">
                 <button type="submit">Create Event</button>
-                <a href="../index.php" class="cancel-button">Cancel</a>
+                <a href="view_registration.php" class="cancel-button">Cancel</a>
             </div>
         </form>
     </div>

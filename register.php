@@ -191,9 +191,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <input type="email" id="email" name="email" placeholder="Email" required class="form-input">
                 <input type="password" id="password" name="password" placeholder="Password" required class="form-input">
                 <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirm Password" required class="form-input">
-                <label>
-                    <input type="checkbox" name="is_admin" value="1"> Register as Admin
-                </label>
                 <br>
                 <button type="submit" class="btn-submit">Join now</button>
             </form>

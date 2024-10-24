@@ -17,7 +17,7 @@ $result = $stmt->get_result();
 $user = $result->fetch_assoc();
 
 if ($user['role'] !== 'admin') {
-    redirect('../user/dashboard.php');
+    redirect('../admin/dashboard.php');
 }
 
 // Ambil event ID dari query parameter dan validasi

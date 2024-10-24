@@ -3,16 +3,18 @@ require_once 'header.php';
 require_once 'db.php';
 require_once 'functions.php';
 
+// Check if event ID is provided and valid
 if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
-    header('Location: index.php');
+    header('Location: ../index.php');
     exit();
 }
 
 $event_id = intval($_GET['id']);
 $event = dbQuery("SELECT * FROM events WHERE id = ?", [$event_id])->fetch_assoc();
 
+// Check if the event exists
 if (!$event) {
-    header('Location: index.php');
+    header('Location: ../index.php');
     exit();
 }
 
@@ -20,70 +22,108 @@ $is_registered = false;
 $registration_error = '';
 $registration_success = '';
 
+// Check if the user is logged in
 if (isLoggedIn()) {
-    $user_id = $_SESSION['user_id'];
-    $registration = dbQuery("SELECT * FROM registrations WHERE user_id = ? AND event_id = ?", [$user_id, $event_id]);
-    $is_registered = $registration->num_rows > 0;
+    // Check if the user has already registered
+    $user_id = $_SESSION['user_id']; // Assuming you have a session variable for user ID
+    $registration_check = dbQuery("SELECT * FROM registrations WHERE event_id = ? AND user_id = ?", [$event_id, $user_id])->fetch_assoc();
+    
+    if ($registration_check) {
+        $is_registered = true;
+    }
 
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
-        if ($_POST['action'] === 'register') {
-            if ($event['current_participants'] < $event['max_participants']) {
-                $result = dbInsert("INSERT INTO registrations (user_id, event_id) VALUES (?, ?)", [$user_id, $event_id]);
-                if ($result) {
-                    dbQuery("UPDATE events SET current_participants = current_participants + 1 WHERE id = ?", [$event_id]);
-                    $is_registered = true;
-                    $registration_success = "You have successfully registered for this event.";
+    // Handle registration or unregistration
+    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+        $action = $_POST['action'] ?? '';
+        
+        try {
+            if ($action === 'register') {
+                // Check if there are available slots
+                if ($event['current_participants'] < $event['max_participants']) {
+                    // Register user
+                    $register_query = "INSERT INTO registrations (event_id, user_id) VALUES (?, ?)";
+                    dbInsert($register_query, [$event_id, $user_id]);
+                    
+                    // Update current participants in the events table
+                    $update_query = "UPDATE events SET current_participants = current_participants + 1 WHERE id = ?";
+                    dbInsert($update_query, [$event_id]);
+                    
+                    $registration_success = 'You have successfully registered for this event!';
+                    $is_registered = true; // Update the registration status
                 } else {
-                    $registration_error = "Failed to register for the event. Please try again.";
+                    $registration_error = 'No available slots for this event.';
                 }
-            } else {
-                $registration_error = "Sorry, this event is already full.";
+            } elseif ($action === 'unregister') {
+                // Unregister user
+                $unregister_query = "DELETE FROM registrations WHERE event_id = ? AND user_id = ?";
+                dbInsert($unregister_query, [$event_id, $user_id]);
+                
+                // Update current participants in the events table
+                $update_query = "UPDATE events SET current_participants = current_participants - 1 WHERE id = ?";
+                dbInsert($update_query, [$event_id]);
+                
+                $registration_success = 'You have successfully unregistered from this event.';
+                $is_registered = false; // Update the registration status
             }
-        } elseif ($_POST['action'] === 'unregister') {
-            $result = dbQuery("DELETE FROM registrations WHERE user_id = ? AND event_id = ?", [$user_id, $event_id]);
-            if ($result) {
-                dbQuery("UPDATE events SET current_participants = current_participants - 1 WHERE id = ?", [$event_id]);
-                $is_registered = false;
-                $registration_success = "You have successfully unregistered from this event.";
-            } else {
-                $registration_error = "Failed to unregister from the event. Please try again.";
-            }
+        } catch (Exception $e) {
+            $registration_error = 'An error occurred: ' . $e->getMessage();
         }
     }
 }
 ?>
 
-<h2 class="text-3xl font-bold mb-6"><?php echo htmlspecialchars($event['name'] ?? ''); ?></h2>
+<h2 class="text-3xl font-bold mb-6"><?php echo htmlspecialchars($event['name']); ?></h2>
 
+<!-- Display registration messages -->
 <?php if ($registration_error): ?>
     <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-        <?php echo htmlspecialchars($registration_error ?? ''); ?>
+        <?php echo htmlspecialchars($registration_error); ?>
     </div>
 <?php endif; ?>
 
 <?php if ($registration_success): ?>
     <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
-        <?php echo htmlspecialchars($registration_success ?? ''); ?>
+        <?php echo htmlspecialchars($registration_success); ?>
     </div>
 <?php endif; ?>
 
 <div class="bg-white rounded-lg shadow-md overflow-hidden">
-    <?php if (!empty($event['image_path'])): ?>
-        <!-- Ensure the path points to the uploads folder -->
-        <img src="<?php echo 'uploads/' . htmlspecialchars($event['image_path']); ?>" 
-             alt="<?php echo htmlspecialchars($event['name']); ?>" 
-             class="w-full h-64 object-cover">
-    <?php else: ?>
-        <!-- Fallback image if no image is found -->
-        <img src="path_to_default_image_placeholder" alt="Default Image" class="w-full h-64 object-cover">
-    <?php endif; ?>
+    <!-- Image display -->
+    <?php
+    // Base path for uploads/events folder
+    $base_upload_path = '../uploads/events/';
     
+    if (!empty($event['image_path'])) {
+        $image_path = $base_upload_path . htmlspecialchars($event['image_path']);
+        
+        if (file_exists($image_path) && is_readable($image_path)) {
+            ?>
+            <img src="<?php echo $image_path; ?>" 
+                 alt="<?php echo htmlspecialchars($event['name']); ?>" 
+                 class="w-full h-64 object-cover">
+            <?php
+        } else {
+            ?>
+            <img src="../assets/images/default-event.jpg" 
+                 alt="Default Image" 
+                 class="w-full h-64 object-cover">
+            <?php
+        }
+    } else {
+        ?>
+        <img src="../assets/images/default-event.jpg" 
+             alt="Default Image" 
+             class="w-full h-64 object-cover">
+        <?php
+    }
+    ?>
+
     <div class="p-6">
-        <p class="text-gray-600 mb-2"><strong>Date:</strong> <?php echo htmlspecialchars($event['date'] ?? ''); ?></p>
-        <p class="text-gray-600 mb-2"><strong>Time:</strong> <?php echo htmlspecialchars($event['time'] ?? ''); ?></p>
-        <p class="text-gray-600 mb-2"><strong>Location:</strong> <?php echo htmlspecialchars($event['location'] ?? ''); ?></p>
-        <p class="text-gray-600 mb-4"><strong>Available Slots:</strong> <?php echo ($event['max_participants'] - $event['current_participants']) ?? 0; ?> / <?php echo htmlspecialchars($event['max_participants'] ?? 0); ?></p>
-        <p class="text-gray-800 mb-6"><?php echo nl2br(htmlspecialchars($event['description'] ?? '')); ?></p>
+        <p class="text-gray-600 mb-2"><strong>Date:</strong> <?php echo htmlspecialchars($event['date']); ?></p>
+        <p class="text-gray-600 mb-2"><strong>Time:</strong> <?php echo htmlspecialchars($event['time']); ?></p>
+        <p class="text-gray-600 mb-2"><strong>Location:</strong> <?php echo htmlspecialchars($event['location']); ?></p>
+        <p class="text-gray-600 mb-4"><strong>Available Slots:</strong> <?php echo htmlspecialchars($event['max_participants'] - $event['current_participants']); ?> / <?php echo htmlspecialchars($event['max_participants']); ?></p>
+        <p class="text-gray-800 mb-6"><?php echo nl2br(htmlspecialchars($event['description'])); ?></p>
         
         <?php if (isLoggedIn()): ?>
             <?php if ($is_registered): ?>

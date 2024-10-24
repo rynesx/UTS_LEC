@@ -28,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     // Handle image upload if a new one is provided
     if (isset($_FILES['image']) && $_FILES['image']['error'] == UPLOAD_ERR_OK) {
-        $upload_dir = '../uploads/';
+        $upload_dir = '../uploads/events/';  // Change to the events folder
         if (!file_exists($upload_dir)) {
             mkdir($upload_dir, 0755, true);
         }
@@ -43,7 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             if ($event['image_path'] && file_exists($event['image_path'])) {
                 unlink($event['image_path']);
             }
-            $image_path = $new_image_path;
+            $image_path = 'uploads/events/' . $new_filename;  // Update the path for the database
         } else {
             $error = "Failed to upload the image.";
         }
@@ -54,7 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $stmt->bind_param("sssssssi", $name, $date, $time, $location, $description, $max_participants, $image_path, $id);
 
     if ($stmt->execute()) {
-        header('Location: ../index.php');
+        header('Location: view_registration.php');
         exit;
     } else {
         $error = "Error updating event: " . $stmt->error;
@@ -248,7 +248,7 @@ if (!$event) {
 
             <div class="button-group">
                 <button type="submit">Update Event</button>
-                <a href="../index.php" class="cancel-button">Cancel</a>
+                <a href="view_registration.php" class="cancel-button">Cancel</a>
             </div>
         </form>
     </div>
