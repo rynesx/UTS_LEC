@@ -69,8 +69,15 @@ if (isLoggedIn()) {
 
 <div class="bg-white rounded-lg shadow-md overflow-hidden">
     <?php if (!empty($event['image_path'])): ?>
-        <img src="<?php echo htmlspecialchars($event['image_path'] ?? ''); ?>" alt="<?php echo htmlspecialchars($event['name'] ?? ''); ?>" class="w-full h-64 object-cover">
+        <!-- Ensure the path points to the uploads folder -->
+        <img src="<?php echo 'uploads/' . htmlspecialchars($event['image_path']); ?>" 
+             alt="<?php echo htmlspecialchars($event['name']); ?>" 
+             class="w-full h-64 object-cover">
+    <?php else: ?>
+        <!-- Fallback image if no image is found -->
+        <img src="path_to_default_image_placeholder" alt="Default Image" class="w-full h-64 object-cover">
     <?php endif; ?>
+    
     <div class="p-6">
         <p class="text-gray-600 mb-2"><strong>Date:</strong> <?php echo htmlspecialchars($event['date'] ?? ''); ?></p>
         <p class="text-gray-600 mb-2"><strong>Time:</strong> <?php echo htmlspecialchars($event['time'] ?? ''); ?></p>
@@ -93,7 +100,7 @@ if (isLoggedIn()) {
                 </form>
             <?php endif; ?>
         <?php else: ?>
-            <p>Please <a href="login.php" class="text-blue-500 hover:underline">log in</a> to register for this event.</p>
+            <p>Please <a href="../login.php" class="text-blue-500 hover:underline">log in</a> to register for this event.</p>
         <?php endif; ?>
     </div>
 </div>

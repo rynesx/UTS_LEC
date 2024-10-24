@@ -8,6 +8,7 @@ if (!isset($_SESSION['user_id'])) {
     redirect('../login.php');
 }
 
+// Mengambil user_id dan role
 $user_id = $_SESSION['user_id'];
 $stmt = $conn->prepare("SELECT role FROM users WHERE id = ?");
 $stmt->bind_param("i", $user_id);
@@ -19,8 +20,8 @@ if ($user['role'] !== 'admin') {
     redirect('../user/dashboard.php');
 }
 
-// Ambil event ID
-$event_id = $_GET['event_id'];
+// Ambil event ID dari query parameter dan validasi
+$event_id = isset($_GET['event_id']) ? intval($_GET['event_id']) : 0;
 
 // Ambil data peserta event
 $stmt = $conn->prepare("SELECT u.id, u.name, u.email FROM registrations ep
@@ -65,6 +66,11 @@ $participants = $stmt->get_result();
                         </td>
                     </tr>
                     <?php endwhile; ?>
+                    <?php if ($participants->num_rows === 0): ?>
+                    <tr>
+                        <td colspan="3" class="px-6 py-4 text-center">No participants found for this event.</td>
+                    </tr>
+                    <?php endif; ?>
                 </tbody>
             </table>
         </div>

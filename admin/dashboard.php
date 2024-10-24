@@ -73,6 +73,12 @@ $totalRegistrations = $conn->query("SELECT COUNT(*) as count FROM registrations"
                     Manage Users
                 </a>
             </div>
+            <div class="px-6 py-3 hover:bg-gray-700 cursor-pointer">
+                <a href="export_csv.php" class="flex items-center">
+                    <i class="fas fa-file-csv mr-3"></i>
+                    Export Registrations
+                </a>
+            </div>
         </nav>
     </div>
 
