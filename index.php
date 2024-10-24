@@ -23,7 +23,7 @@ require_once 'includes/header.php';
     <div class="relative min-h-screen flex items-center justify-center">
         <!-- Background Image -->
         <div class="absolute inset-0">
-            <img src="image/ABZ.jpg" alt="Restaurant Background" class="w-full h-full object-cover">
+            <img src="image/BCG.jpg" alt="Restaurant Background" class="w-full h-full object-cover">
             <!-- Overlay -->
             <div class="absolute inset-0 bg-black opacity-50"></div>
         </div>
