@@ -128,7 +128,7 @@ $totalRegistrations = $conn->query("SELECT COUNT(*) as count FROM registrations"
                     <a href="event_management.php" class="block bg-blue-500 text-white rounded px-4 py-2 text-center hover:bg-blue-600">
                         View All Events
                     </a>
-                    <a href="edit_event.php" class="block bg-green-500 text-white rounded px-4 py-2 text-center hover:bg-green-600">
+                    <a href="add_event.php" class="block bg-green-500 text-white rounded px-4 py-2 text-center hover:bg-green-600">
                         Add New Event
                     </a>
                 </div>

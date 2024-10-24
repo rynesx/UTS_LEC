@@ -3,14 +3,6 @@
 require_once '../includes/db.php';
 require_once '../includes/functions.php';
 
-// Fungsi untuk membersihkan input pengguna
-function sanitizeInput($data) {
-    $data = trim($data);
-    $data = stripslashes($data);
-    $data = htmlspecialchars($data);
-    return $data;
-}
-
 $errors = [];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -231,7 +223,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="welcome-box">
             <h2>Remember Password?</h2>
             <p>If you remember your password, please login with your personal info</p>
-            <a href="login.php" class="btn-signup">Sign In</a>
+            <a href="../login.php" class="btn-signup">Sign In</a>
         </div>
     </div>
 </div>

@@ -77,7 +77,10 @@ $events = $conn->query("SELECT * FROM events ORDER BY date DESC");
                         <td class="px-6 py-4 whitespace-nowrap"><?php echo htmlspecialchars($event['name']); ?></td>
                         <td class="px-6 py-4 whitespace-nowrap"><?php echo date('M d, Y H:i', strtotime($event['date'])); ?></td>
                         <td class="px-6 py-4 whitespace-nowrap"><?php echo htmlspecialchars($event['location']); ?></td>
-                        <td class="px-6 py-4 whitespace-nowrap"><?php echo htmlspecialchars($event['max_participants']); ?></td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <a href="view_participants.php?event_id=<?php echo $event['id']; ?>" 
+                               class="text-indigo-600 hover:text-indigo-900">View Participants</a>
+                        </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                             <a href="edit_event.php?id=<?php echo $event['id']; ?>" 
                                class="text-indigo-600 hover:text-indigo-900 mr-3">Edit</a>

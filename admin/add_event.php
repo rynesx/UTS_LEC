@@ -1,111 +1,301 @@
 <?php
-require '../includes/db.php';
-require '../includes/functions.php';
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
 
-// Handle form submission
+require_once(__DIR__ . '/../includes/functions.php');
+require_once(__DIR__ . '/../includes/db.php');
+
+// Check if user is logged in
+redirectIfNotLoggedIn();
+
+// Initialize variables
+$error = '';
+$success = '';
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $name = sanitize($_POST['name']);
-    $date = $_POST['date'];
-    // Extract time from the datetime-local input
-    $time = date('H:i:s', strtotime($_POST['date'])); // Get only the time part
-    $location = sanitize($_POST['location']);
-    $description = sanitize($_POST['description']);
-    $max_participants = intval($_POST['max_participants']);
-    
-    // Handle image upload
-    $image_path = null;
-    if (isset($_FILES['image']) && $_FILES['image']['error'] == UPLOAD_ERR_OK) {
-        // Create uploads directory if it doesn't exist
-        if (!file_exists('uploads')) {
-            mkdir('uploads', 0777, true);
+    try {
+        // Validate and sanitize inputs using your existing function
+        $name = sanitizeInput($_POST['name'] ?? '');
+        $date = sanitizeInput($_POST['date'] ?? '');
+        $time = sanitizeInput($_POST['time'] ?? '');
+        $location = sanitizeInput($_POST['location'] ?? '');
+        $description = sanitizeInput($_POST['description'] ?? '');
+        $max_participants = (int)sanitizeInput($_POST['max_participants'] ?? 0);
+        $image_path = null;
+
+        // Validate required fields
+        if (empty($name) || empty($date) || empty($time) || empty($location) || empty($description) || $max_participants <= 0) {
+            throw new Exception('All fields are required and max participants must be greater than 0.');
         }
+
+        // Handle image upload
+        if (isset($_FILES['image']) && $_FILES['image']['error'] == UPLOAD_ERR_OK) {
+            $upload_dir = __DIR__ . '/uploads/';
+            
+            // Create uploads directory if it doesn't exist
+            if (!file_exists($upload_dir)) {
+                mkdir($upload_dir, 0755, true);
+            }
+
+            // Validate file type
+            $allowed_types = ['image/jpeg', 'image/png', 'image/gif'];
+            $file_type = $_FILES['image']['type'];
+            
+            if (!in_array($file_type, $allowed_types)) {
+                throw new Exception('Invalid file type. Only JPG, PNG and GIF files are allowed.');
+            }
+
+            // Generate safe filename
+            $file_extension = pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION);
+            $new_filename = uniqid() . '.' . $file_extension;
+            $target_file = $upload_dir . $new_filename;
+
+            // Move uploaded file
+            if (!move_uploaded_file($_FILES['image']['tmp_name'], $target_file)) {
+                throw new Exception('Failed to upload image.');
+            }
+
+            $image_path = 'uploads/' . $new_filename;
+        }
+
+        // Using your dbInsert function
+        $query = "INSERT INTO events (name, date, time, location, description, max_participants, image_path, created_at) 
+                 VALUES (?, ?, ?, ?, ?, ?, ?, NOW())";
         
-        // Upload new image
-        $image_path = 'uploads/' . basename($_FILES["image"]["name"]);
-        move_uploaded_file($_FILES["image"]["tmp_name"], $image_path);
-        
-        // Insert with image
-        $stmt = $conn->prepare("INSERT INTO events (name, date, time, location, description, max_participants, image_path) VALUES (?, ?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("sssssis", $name, $date, $time, $location, $description, $max_participants, $image_path);
-    } else {
-        // Insert without image
-        $stmt = $conn->prepare("INSERT INTO events (name, date, time, location, description, max_participants) VALUES (?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("ssssis", $name, $date, $time, $location, $description, $max_participants);
-    }
-    
-    if ($stmt->execute()) {
-        header('Location: ../index.php');
-        exit;
-    } else {
-        $error = "Error adding event: " . $stmt->error;
+        $params = [
+            $name,
+            $date,
+            $time,
+            $location,
+            $description,
+            $max_participants,
+            $image_path
+        ];
+
+        if (dbInsert($query, $params)) {
+            $_SESSION['success_message'] = 'Event created successfully!';
+            redirect('../index.php');
+        } else {
+            throw new Exception('Failed to create event. Please try again.');
+        }
+
+    } catch (Exception $e) {
+        $error = $e->getMessage();
     }
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Add New Event</title>
-    <link rel="stylesheet" href="path/to/tailwind.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add New Event - <?php echo SITE_NAME; ?></title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .form-container {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 800px;
+            margin: 20px;
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 24px;
+            font-weight: 500;
+        }
+
+        .error-message {
+            background-color: #FEE2E2;
+            border: 1px solid #FCA5A5;
+            color: #DC2626;
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .success-message {
+            background-color: #D1FAE5;
+            border: 1px solid #6EE7B7;
+            color: #047857;
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #374151;
+            font-weight: 500;
+        }
+
+        input[type="text"],
+        input[type="date"],
+        input[type="time"],
+        input[type="number"],
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #D1D5DB;
+            border-radius: 8px;
+            font-size: 16px;
+            color: #1F2937;
+        }
+
+        input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            border: 2px dashed #D1D5DB;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        button[type="submit"],
+        .cancel-button {
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+            min-width: 120px;
+        }
+
+        button[type="submit"] {
+            background-color: #6366F1;
+            color: white;
+            border: none;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #4F46E5;
+        }
+
+        .cancel-button {
+            background-color: #F3F4F6;
+            color: #4B5563;
+            border: 1px solid #D1D5DB;
+        }
+
+        .cancel-button:hover {
+            background-color: #E5E7EB;
+        }
+
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-container {
+                margin: 10px;
+                padding: 20px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <div class="container mx-auto px-4 py-6">
-        <h2 class="text-2xl font-bold mb-4">Add New Event</h2>
+    <div class="form-container">
+        <h2>Add New Event</h2>
         
-        <?php if (isset($error)): ?>
-            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+        <?php if ($error): ?>
+            <div class="error-message">
                 <?php echo htmlspecialchars($error); ?>
             </div>
         <?php endif; ?>
 
-        <form method="post" enctype="multipart/form-data" class="space-y-4">
-            <div>
-                <label class="block">Event Name</label>
-                <input type="text" name="name" required 
-                       class="w-full p-2 border rounded"
-                       value="<?php echo isset($_POST['name']) ? htmlspecialchars($_POST['name']) : ''; ?>">
+        <form method="post" enctype="multipart/form-data" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>">
+            <div class="form-grid">
+                <div class="left-column">
+                    <div class="form-group">
+                        <label for="name">Event Name</label>
+                        <input type="text" id="name" name="name" required 
+                               value="<?php echo isset($_POST['name']) ? htmlspecialchars($_POST['name']) : ''; ?>">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="date">Date</label>
+                        <input type="date" id="date" name="date" required 
+                               value="<?php echo isset($_POST['date']) ? htmlspecialchars($_POST['date']) : ''; ?>">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="time">Time</label>
+                        <input type="time" id="time" name="time" required 
+                               value="<?php echo isset($_POST['time']) ? htmlspecialchars($_POST['time']) : ''; ?>">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="location">Location</label>
+                        <input type="text" id="location" name="location" required 
+                               value="<?php echo isset($_POST['location']) ? htmlspecialchars($_POST['location']) : ''; ?>">
+                    </div>
+                </div>
+
+                <div class="right-column">
+                    <div class="form-group">
+                        <label for="description">Description</label>
+                        <textarea id="description" name="description" required><?php echo isset($_POST['description']) ? htmlspecialchars($_POST['description']) : ''; ?></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="max_participants">Maximum Participants</label>
+                        <input type="number" id="max_participants" name="max_participants" min="1" required 
+                               value="<?php echo isset($_POST['max_participants']) ? htmlspecialchars($_POST['max_participants']) : ''; ?>">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="image">Event Image</label>
+                        <input type="file" id="image" name="image" accept="image/jpeg,image/png,image/gif">
+                    </div>
+                </div>
             </div>
 
-            <div>
-                <label class="block">Date and Time</label>
-                <input type="datetime-local" name="date" required 
-                       class="w-full p-2 border rounded"
-                       value="<?php echo isset($_POST['date']) ? htmlspecialchars($_POST['date']) : ''; ?>">
-            </div>
-
-            <div>
-                <label class="block">Location</label>
-                <input type="text" name="location" required 
-                       class="w-full p-2 border rounded"
-                       value="<?php echo isset($_POST['location']) ? htmlspecialchars($_POST['location']) : ''; ?>">
-            </div>
-
-            <div>
-                <label class="block">Description</label>
-                <textarea name="description" required 
-                          class="w-full p-2 border rounded"><?php echo isset($_POST['description']) ? htmlspecialchars($_POST['description']) : ''; ?></textarea>
-            </div>
-
-            <div>
-                <label class="block">Max Participants</label>
-                <input type="number" name="max_participants" required 
-                       class="w-full p-2 border rounded"
-                       value="<?php echo isset($_POST['max_participants']) ? htmlspecialchars($_POST['max_participants']) : ''; ?>">
-            </div>
-
-            <div>
-                <label class="block">Image</label>
-                <input type="file" name="image" class="w-full p-2 border rounded">
-            </div>
-
-            <div class="flex gap-4">
-                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
-                    Add Event
-                </button>
-                <a href="index.php" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">
-                    Cancel
-                </a>
+            <div class="button-group">
+                <button type="submit">Create Event</button>
+                <a href="../index.php" class="cancel-button">Cancel</a>
             </div>
         </form>
     </div>
