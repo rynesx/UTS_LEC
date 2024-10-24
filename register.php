@@ -100,6 +100,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             justify-content: center;
             align-items: center;
             flex-direction: column;
+            text-align: center;
             padding: 40px;
         }
 
@@ -132,15 +133,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         .btn-submit:hover {
-            background-color: white;
-            color: #D4BEE4;
-            text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.3); /* Efek timbul pada hover */
-        }
+        background-color: white;
+        color: #9B7EBD;
+        border: 2px solid #9B7EBD; /* Menambahkan border saat hover */;
+        text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.3); /* Efek timbul pada hover */
+    }
 
         .btn-signup {
             background-color: white;
             color: #7E60BF;
             border: 2px solid white;
+            margin: 30px;
             width: auto;
             padding: 10px 40px;
             text-align: center;

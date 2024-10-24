@@ -96,6 +96,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             display: flex;
             justify-content: center;
             align-items: center;
+            text-align: center;
             flex-direction: column;
             padding: 40px;
         }
@@ -103,7 +104,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         .welcome-box h2 {
             text-align: center;
             font-size: 28px;
-            margin-bottom: 10px;
+            margin-bottom: 20px;
         }
 
         .form-input {
@@ -128,16 +129,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         .btn-submit:hover {
-            background-color: white;
-            color: #9B7EBD;
-            text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.3); /* Efek timbul pada hover */
-        }
+        background-color: white;
+        color: #9B7EBD;
+        border: 2px solid #9B7EBD; /* Menambahkan border saat hover */
+        border-radius: 50px;
+        text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.3); /* Efek timbul pada hover */
+    }
 
         .btn-signup {
             background-color: white;
             color: #7E60BF;
             border: 2px solid white;
             text-align: center;
+            margin: 30px;
             border-radius: 50px; /* Membuat tombol lonjong */
             padding: 10px 20px;
             cursor: pointer;
