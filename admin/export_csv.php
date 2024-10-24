@@ -15,7 +15,7 @@ $query = "SELECT u.name, u.email, r.registration_date
 $participants = $conn->query($query);
 
 // Mengatur header untuk file CSV
-header('Content-Type: text/csv');
+header('Content-Type: text/csv; charset=utf-8');
 header('Content-Disposition: attachment; filename="participants.csv"');
 
 // Membuka output untuk menulis CSV
@@ -24,6 +24,12 @@ fputcsv($output, array('Name', 'Email', 'Registration Date')); // Menulis header
 
 // Menulis data peserta ke file CSV
 while ($row = $participants->fetch_assoc()) {
+    // Format the registration date to a readable format
+    $row['registration_date'] = date('d/m/Y', strtotime($row['registration_date']));
+    
+    // Trim any whitespace from values
+    $row = array_map('trim', $row);
+
     fputcsv($output, $row);
 }
 
