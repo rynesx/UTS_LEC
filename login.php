@@ -15,38 +15,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($email) || empty($password)) {
         $errors[] = "Email and password are required.";
     } else {
-        // Prepared statement untuk mencegah SQL Injection
-        $stmt = $conn->prepare("SELECT id, name, password, role FROM users WHERE email = ?");
-        $stmt->bind_param("s", $email);
-        
-        // Menjalankan pernyataan
-        if ($stmt->execute()) {
-            $result = $stmt->get_result();
+        // Menggunakan prepared statements untuk mencegah SQL Injection
+        $stmt = $conn->prepare("SELECT id, name, password, role FROM users WHERE email = :email");
+        $stmt->execute(['email' => $email]);
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            if ($result->num_rows === 1) {
-                $user = $result->fetch_assoc();
-                // Verifikasi password yang di-hash
-                if (password_verify($password, $user['password'])) {
-                    // Logika login yang berhasil
-                    $_SESSION['user_id'] = $user['id'];
-                    $_SESSION['user_name'] = $user['name'];
-                    $_SESSION['user_role'] = $user['role'];
+        // Verifikasi pengguna dan password
+        if ($user && password_verify($password, $user['password'])) {
+            // Logika login yang berhasil
+            $_SESSION['user_id'] = $user['id'];
+            $_SESSION['user_name'] = $user['name'];
+            $_SESSION['user_role'] = $user['role'];
 
-                    // Redirect berdasarkan peran pengguna
-                    if ($user['role'] === 'admin') {
-                        header('Location: admin/dashboard.php');
-                    } else {
-                        header('Location: user/dashboard.php');
-                    }
-                    exit();
-                } else {
-                    $errors[] = "Invalid email or password.";
-                }
+            // Redirect berdasarkan peran pengguna
+            if ($user['role'] === 'admin') {
+                header('Location: admin/dashboard.php');
             } else {
-                $errors[] = "Invalid email or password.";
+                header('Location: user/dashboard.php');
             }
+            exit();
         } else {
-            $errors[] = "Error executing query.";
+            $errors[] = "Invalid email or password.";
         }
     }
 }
