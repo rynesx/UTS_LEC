@@ -1,41 +1,42 @@
 <?php
-require_once 'includes/db.php';       // Menghubungkan ke database
-require_once 'includes/functions.php'; // Mengambil fungsi-fungsi
-require 'includes/header.php';    // Memasukkan header
+require_once 'includes/db.php';       // Connect to the database
+require_once 'includes/functions.php'; // Include functions
+require 'includes/header.php';    // Include header
 
-$errors = []; // Array untuk menyimpan error
+$errors = []; // Array to hold errors
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $name = sanitize($_POST['name']); // Menyimpan username
-    $email = sanitize($_POST['email']); // Menyimpan email
-    $password = $_POST['password']; // Menyimpan password
-    $confirm_password = $_POST['confirm_password']; // Menyimpan konfirmasi password
+    // Sanitize and escape user inputs
+    $name = htmlspecialchars(sanitize(trim($_POST['name'])), ENT_QUOTES, 'UTF-8'); // Escape output
+    $email = htmlspecialchars(sanitize(trim($_POST['email'])), ENT_QUOTES, 'UTF-8'); // Escape output
+    $password = trim($_POST['password']); // Store password directly without escaping
+    $confirm_password = trim($_POST['confirm_password']); // Store password directly
 
-    // Validasi input
+    // Validate input
     if (empty($name) || empty($email) || empty($password) || empty($confirm_password)) {
-        $errors[] = "All fields are required."; // Pastikan semua field terisi
+        $errors[] = "All fields are required."; // Ensure all fields are filled
     } elseif ($password !== $confirm_password) {
-        $errors[] = "Passwords do not match."; // Pesan jika kata sandi tidak cocok
+        $errors[] = "Passwords do not match."; // Error for non-matching passwords
     } else {
-        // Cek apakah email sudah ada di database
+        // Check if email already exists
         $stmt = $conn->prepare("SELECT id FROM users WHERE email = ?");
         $stmt->bind_param("s", $email);
         $stmt->execute();
         $result = $stmt->get_result();
 
         if ($result->num_rows > 0) {
-            $errors[] = "Email already registered."; // Jika email sudah terdaftar
+            $errors[] = "Email already registered."; // If email is already registered
         } else {
-            // Hash password dan simpan ke database
+            // Hash the password and save to the database
             $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-            $role = isset($_POST['is_admin']) ? 'admin' : 'user'; // Menetapkan peran berdasarkan checkbox
+            $role = isset($_POST['is_admin']) ? 'admin' : 'user'; // Set role based on checkbox
             $stmt = $conn->prepare("INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)");
             $stmt->bind_param("ssss", $name, $email, $hashed_password, $role);
             if ($stmt->execute()) {
-                header('Location: login.php'); // Redirect ke halaman login setelah registrasi berhasil
+                header('Location: login.php'); // Redirect to login page after successful registration
                 exit();
             } else {
-                $errors[] = "Registration failed. Please try again."; // Pesan jika terjadi kesalahan saat pendaftaran
+                $errors[] = "Registration failed. Please try again."; // Error during registration
             }
         }
     }
