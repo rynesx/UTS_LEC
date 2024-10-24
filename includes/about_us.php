@@ -130,8 +130,8 @@ require_once 'header.php';
                 ],
                 [
                     "name" => "Ghiyats Nabil Rabbani",
-                    "role" => "Full-Stack Developer",
-                    "description" => "I'm Ghiyats Nabil Rabbani as Full-Stack Developer proficient in both front-end and back-end technologies, capable of delivering complete, end-to-end web solutions.",
+                    "role" => "Back-End Developer",
+                    "description" => "I'm I'm Ghiyats Nabil Rabbani, a Back-End Developer specializing in building secure and efficient web applications, with a focus on database security and server architecture.",
                     "image" => "../image/NBL.jpg"
                 ],
                 [
