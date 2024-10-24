@@ -4,7 +4,7 @@ require_once 'includes/db.php'; // Pastikan koneksi database
 require_once 'includes/functions.php'; // Pastikan fungsi-fungsi diimpor
 require 'includes/header.php';
 
-$errors = [];
+$errors = []; // Inisialisasi array untuk menyimpan error
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Mengambil dan membersihkan input
@@ -16,30 +16,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors[] = "Email and password are required.";
     } else {
         // Menggunakan prepared statements untuk mencegah SQL Injection
-        $stmt = $conn->prepare("SELECT id, name, password, role FROM users WHERE email = :email");
-        $stmt->execute(['email' => $email]);
-        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+        $stmt = $conn->prepare("SELECT id, name, password, role FROM users WHERE email = ?");
+        $stmt->bind_param("s", $email);
+        
+        // Menjalankan pernyataan
+        if ($stmt->execute()) {
+            $result = $stmt->get_result();
 
-        // Verifikasi pengguna dan password
-        if ($user && password_verify($password, $user['password'])) {
-            // Logika login yang berhasil
-            $_SESSION['user_id'] = $user['id'];
-            $_SESSION['user_name'] = $user['name'];
-            $_SESSION['user_role'] = $user['role'];
+            if ($result->num_rows === 1) {
+                $user = $result->fetch_assoc();
+                // Verifikasi password yang di-hash
+                if (password_verify($password, $user['password'])) {
+                    // Logika login yang berhasil
+                    $_SESSION['user_id'] = $user['id'];
+                    $_SESSION['user_name'] = $user['name'];
+                    $_SESSION['user_role'] = $user['role'];
 
-            // Redirect berdasarkan peran pengguna
-            if ($user['role'] === 'admin') {
-                header('Location: admin/dashboard.php');
+                    // Redirect berdasarkan peran pengguna
+                    if ($user['role'] === 'admin') {
+                        header('Location: admin/dashboard.php');
+                    } else {
+                        header('Location: user/dashboard.php');
+                    }
+                    exit();
+                } else {
+                    $errors[] = "Invalid email or password.";
+                }
             } else {
-                header('Location: user/dashboard.php');
+                $errors[] = "Invalid email or password.";
             }
-            exit();
         } else {
-            $errors[] = "Invalid email or password.";
+            $errors[] = "Error executing query.";
         }
     }
 }
-
 ?>
 
 <!DOCTYPE html>
@@ -78,7 +88,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="error-message">
                     <ul>
                         <?php foreach ($errors as $error): ?>
-                            <li><?php echo htmlspecialchars($error); ?></li>
+                            <li><?php echo htmlspecialchars($error); ?></li> <!-- Menggunakan htmlspecialchars untuk menghindari XSS -->
                         <?php endforeach; ?>
                     </ul>
                 </div>
