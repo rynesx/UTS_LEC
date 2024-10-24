@@ -2,7 +2,7 @@
     session_start(); // Pastikan session_start hanya dipanggil sekali 
 } 
 require_once 'db.php'; // Menghubungkan ke database 
-require_once 'functions.php'; // Mengambil fungsi-fungsi 
+require_once 'functions.php'; // Mengambil fungsi-fungsi
 
 // Fungsi untuk mengecek role user
 function getUserRole() {
@@ -28,13 +28,15 @@ function getUserRole() {
     <script src="https://cdn.tailwindcss.com"></script> 
     <link rel="stylesheet" href="/css/styles.css"> 
 </head> 
-<body class="bg-gray-100"> 
-    <header class="bg-purple-900 text-white p-4"> 
+<body class="bg-gray-100 m-0 p-0">
+    <header class="bg-purple-900 text-white p-4"> <!-- Ubah padding menjadi 0 -->
         <div class="container mx-auto flex justify-between items-center"> 
             <h1 class="text-2xl font-bold"><?php echo SITE_NAME; ?></h1> 
             <nav> 
                 <ul class="flex space-x-4"> 
-                    <li><a href="/UTS_LEC/index.php" class="hover:underline">Home</a></li> 
+                    <li><a href="/UTS_LEC/index.php" class="hover:underline">Home</a></li>
+                    <li><a href="/UTS_LEC/includes/about_us.php" class="hover:underline">About Us</a></li>
+                    <li><a href="/UTS_LEC/admin/view_registration.php" class="hover:underline">Upcoming</a></li>
                     <?php if (isLoggedIn()): 
                         $userRole = getUserRole();
                         $dashboardUrl = ($userRole === 'admin') ? '/UTS_LEC/admin/dashboard.php' : '/UTS_LEC/user/dashboard.php';
@@ -50,4 +52,4 @@ function getUserRole() {
             </nav> 
         </div> 
     </header> 
-    <main class="container mx-auto mt-8">
+    <main class="container mx-auto mt-0">

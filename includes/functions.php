@@ -2,7 +2,7 @@
 if (session_status() == PHP_SESSION_NONE) {
     session_start(); // Memulai sesi hanya jika belum ada sesi yang aktif
 }
-define('SITE_NAME', 'Webprog UTS'); // Definisikan nama situs
+define('SITE_NAME', 'EventPlay'); // Definisikan nama situs
 
 function sanitize($data) {
     global $conn;
