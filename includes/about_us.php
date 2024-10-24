@@ -131,13 +131,13 @@ require_once 'header.php';
                 [
                     "name" => "Ghiyats Nabil Rabbani",
                     "role" => "Back-End Developer",
-                    "description" => "I'm I'm Ghiyats Nabil Rabbani, a Back-End Developer specializing in building secure and efficient web applications, with a focus on database security and server architecture.",
+                    "description" => "I'm Ghiyats Nabil Rabbani, a Back-End Developer specializing in building secure and efficient web applications, with a focus on database security and server architecture.",
                     "image" => "../image/NBL.jpg"
                 ],
                 [
                     "name" => "Muhammad Abidzar Prayitno",
                     "role" => "Back-End Developer",
-                    "description" => "I'm Muhammad Abidzar Prayitno as Back-End Developer specializing in building efficient and scalable server-side applications and APIs.",
+                    "description" => "I'm Muhammad Abidzar Prayitno as Back-End Developer siap menjadi badutmu",
                     "image" => "../image/ABZ.jpg"
                 ]
             ];

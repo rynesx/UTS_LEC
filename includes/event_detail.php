@@ -25,7 +25,7 @@ $registration_success = '';
 // Check if the user is logged in
 if (isLoggedIn()) {
     // Check if the user has already registered
-    $user_id = $_SESSION['user_id']; // Assuming you have a session variable for user ID
+    $user_id = $_SESSION['user_id'];
     $registration_check = dbQuery("SELECT * FROM registrations WHERE event_id = ? AND user_id = ?", [$event_id, $user_id])->fetch_assoc();
     
     if ($registration_check) {
@@ -49,7 +49,7 @@ if (isLoggedIn()) {
                     dbInsert($update_query, [$event_id]);
                     
                     $registration_success = 'You have successfully registered for this event!';
-                    $is_registered = true; // Update the registration status
+                    $is_registered = true;
                 } else {
                     $registration_error = 'No available slots for this event.';
                 }
@@ -63,7 +63,7 @@ if (isLoggedIn()) {
                 dbInsert($update_query, [$event_id]);
                 
                 $registration_success = 'You have successfully unregistered from this event.';
-                $is_registered = false; // Update the registration status
+                $is_registered = false;
             }
         } catch (Exception $e) {
             $registration_error = 'An error occurred: ' . $e->getMessage();
@@ -90,30 +90,33 @@ if (isLoggedIn()) {
 <div class="bg-white rounded-lg shadow-md overflow-hidden">
     <!-- Image display -->
     <?php
-    // Base path for uploads/events folder
-    $base_upload_path = '../uploads/events/';
-    
+    // Check if image path exists
     if (!empty($event['image_path'])) {
-        $image_path = $base_upload_path . htmlspecialchars($event['image_path']);
-        
-        if (file_exists($image_path) && is_readable($image_path)) {
+        $image_path = '../uploads/events/' . basename($event['image_path']);
+        error_log("Cek path gambar: " . $image_path);
+
+        if (file_exists($image_path)) {
+            error_log("Gambar ditemukan: " . $image_path);
             ?>
-            <img src="<?php echo $image_path; ?>" 
-                 alt="<?php echo htmlspecialchars($event['name']); ?>" 
-                 class="w-full h-64 object-cover">
+            <div class="relative h-64">
+                <img src="<?php echo htmlspecialchars($image_path); ?>" 
+                     alt="<?php echo htmlspecialchars($event['name']); ?>" 
+                     class="absolute w-full h-full object-cover">
+            </div>
             <?php
         } else {
+            error_log("Gambar tidak ditemukan di: " . $image_path);
             ?>
-            <img src="../assets/images/default-event.jpg" 
-                 alt="Default Image" 
-                 class="w-full h-64 object-cover">
+            <div class="w-full h-64 bg-gray-200 flex items-center justify-center text-gray-500">
+                Image not found
+            </div>
             <?php
         }
     } else {
         ?>
-        <img src="../assets/images/default-event.jpg" 
-             alt="Default Image" 
-             class="w-full h-64 object-cover">
+        <div class="w-full h-64 bg-gray-200 flex items-center justify-center text-gray-500">
+            No Image
+        </div>
         <?php
     }
     ?>

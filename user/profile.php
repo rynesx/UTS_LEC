@@ -73,9 +73,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $user_profile_picture = !empty($profile_picture) ? $profile_picture : $user_profile_picture;
             $errors = [];
         } else {
-            // Add error message from database
-            $errors[] = "Failed to update profile: " . $conn->error;
+            // Failed to update profile, redirect to home
+            header("Location: ../includes/about_us.php");
+            exit(); // Stop further script execution
         }
+    } else {
+        // Validation errors, redirect to home
+        header("Location: ../includes/about_us.php");
+        exit(); // Stop further script execution
     }
 }
 ?>
@@ -87,7 +92,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <?php if (!empty($errors)): ?>
     <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-        <strong>Please fix the following errors:</strong>
         <ul>
             <?php foreach ($errors as $error): ?>
                 <li><?php echo htmlspecialchars($error); ?></li>

@@ -3,8 +3,8 @@ if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
-require_once(__DIR__ . '/../includes/functions.php');
-require_once(__DIR__ . '/../includes/db.php');
+require_once '../includes/functions.php';
+require_once '../includes/db.php';
 
 // Check if user is logged in
 redirectIfNotLoggedIn();
@@ -12,6 +12,7 @@ redirectIfNotLoggedIn();
 // Initialize variables
 $error = '';
 $success = '';
+$image_path = null; // Initialize image_path variable
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     try {
@@ -31,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         // Handle image upload
         if (isset($_FILES['image']) && $_FILES['image']['error'] == UPLOAD_ERR_OK) {
-            $upload_dir = __DIR__ . '/../uploads/events/'; // Ganti ke folder events
+            $upload_dir = '../uploads/events/'; // Ganti ke folder events
             
             // Create uploads directory if it doesn't exist
             if (!file_exists($upload_dir)) {
@@ -224,6 +225,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             background-color: #E5E7EB;
         }
 
+        .preview-image {
+            max-width: 100%; 
+            border-radius: 10px; 
+            margin-top: 10px;
+        }
+
         @media (max-width: 768px) {
             .form-grid {
                 grid-template-columns: 1fr;
@@ -234,7 +241,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 padding: 20px;
             }
         }
-        </style>
+    </style>
 </head>
 <body>
     <div class="form-container">
@@ -290,6 +297,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         <label for="image">Event Image</label>
                         <input type="file" id="image" name="image" accept="image/jpeg,image/png,image/gif">
                     </div>
+
+                    <!-- Menambahkan penampilan gambar jika ada -->
+                    <?php if ($image_path): ?>
+                        <div class="form-group">
+                            <img src="<?php echo htmlspecialchars($image_path); ?>" alt="Event Image" class="preview-image">
+                        </div>
+                    <?php endif; ?>
                 </div>
             </div>
 

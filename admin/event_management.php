@@ -65,14 +65,29 @@ $events = $conn->query("SELECT * FROM events ORDER BY date DESC");
                     <?php while ($event = $events->fetch_assoc()): ?>
                     <tr>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <?php if ($event['image_path']): ?>
-                                <img src="<?php echo htmlspecialchars($event['image_path']); ?>" 
-                                     alt="Event image" class="h-20 w-20 md:h-24 md:w-24 object-cover rounded">
-                            <?php else: ?>
+                            <?php 
+                            if (!empty($event['image_path'])) {
+                                $image_path = '../uploads/events/' . basename($event['image_path']);
+                                if (file_exists($image_path)) {
+                                    ?>
+                                    <img src="<?php echo htmlspecialchars($image_path); ?>" 
+                                         alt="Event image" class="h-20 w-20 md:h-24 md:w-24 object-cover rounded">
+                                    <?php
+                                } else {
+                                    ?>
+                                    <div class="h-20 w-20 md:h-24 md:w-24 bg-gray-200 rounded flex items-center justify-center">
+                                        <span class="text-gray-500">Image not found</span>
+                                    </div>
+                                    <?php
+                                }
+                            } else {
+                                ?>
                                 <div class="h-20 w-20 md:h-24 md:w-24 bg-gray-200 rounded flex items-center justify-center">
                                     <span class="text-gray-500">No image</span>
                                 </div>
-                            <?php endif; ?>
+                                <?php
+                            }
+                            ?>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap"><?php echo htmlspecialchars($event['name']); ?></td>
                         <td class="px-6 py-4 whitespace-nowrap"><?php echo date('M d, Y H:i', strtotime($event['date'])); ?></td>
