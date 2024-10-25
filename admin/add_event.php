@@ -6,17 +6,15 @@ if (session_status() == PHP_SESSION_NONE) {
 require_once '../includes/functions.php';
 require_once '../includes/db.php';
 
-// Check if user is logged in
 redirectIfNotLoggedIn();
 
-// Initialize variables
 $error = '';
 $success = '';
-$image_path = null; // Initialize image_path variable
+$image_path = null; 
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     try {
-        // Validate and sanitize inputs using your existing function
+      
         $name = sanitizeInput($_POST['name'] ?? '');
         $date = sanitizeInput($_POST['date'] ?? '');
         $time = sanitizeInput($_POST['time'] ?? '');
@@ -25,21 +23,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $max_participants = (int)sanitizeInput($_POST['max_participants'] ?? 0);
         $image_path = null;
 
-        // Validate required fields
+       
         if (empty($name) || empty($date) || empty($time) || empty($location) || empty($description) || $max_participants <= 0) {
             throw new Exception('All fields are required and max participants must be greater than 0.');
         }
 
-        // Handle image upload
         if (isset($_FILES['image']) && $_FILES['image']['error'] == UPLOAD_ERR_OK) {
-            $upload_dir = '../uploads/events/'; // Ganti ke folder events
-            
-            // Create uploads directory if it doesn't exist
+            $upload_dir = '../uploads/events/'; 
+
             if (!file_exists($upload_dir)) {
                 mkdir($upload_dir, 0755, true);
             }
 
-            // Validate file type
             $allowed_types = ['image/jpeg', 'image/png', 'image/gif'];
             $file_type = $_FILES['image']['type'];
             
@@ -47,20 +42,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 throw new Exception('Invalid file type. Only JPG, PNG and GIF files are allowed.');
             }
 
-            // Generate safe filename
             $file_extension = pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION);
             $new_filename = uniqid() . '.' . $file_extension;
             $target_file = $upload_dir . $new_filename;
 
-            // Move uploaded file
             if (!move_uploaded_file($_FILES['image']['tmp_name'], $target_file)) {
                 throw new Exception('Failed to upload image.');
             }
 
-            $image_path = 'uploads/events/' . $new_filename; // Path yang disimpan di database
+            $image_path = 'uploads/events/' . $new_filename; 
         }
 
-        // Using your dbInsert function
         $query = "INSERT INTO events (name, date, time, location, description, max_participants, image_path, created_at) 
                  VALUES (?, ?, ?, ?, ?, ?, ?, NOW())";
         

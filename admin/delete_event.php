@@ -9,19 +9,16 @@ if ($id === 0) {
     die('Invalid event ID');
 }
 
-// Get image path before deleting
 $stmt = $conn->prepare("SELECT image_path FROM events WHERE id = ?");
 $stmt->bind_param("i", $id);
 $stmt->execute();
 $result = $stmt->get_result();
 $event = $result->fetch_assoc();
 
-// Delete image file if exists
 if ($event && $event['image_path'] && file_exists($event['image_path'])) {
     unlink($event['image_path']);
 }
 
-// Delete event from database
 $stmt = $conn->prepare("DELETE FROM events WHERE id = ?");
 $stmt->bind_param("i", $id);
 

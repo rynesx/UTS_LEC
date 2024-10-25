@@ -3,12 +3,10 @@ session_start();
 require '../includes/db.php';
 require '../includes/functions.php';
 
-// Pastikan pengguna sudah login
 if (!isset($_SESSION['user_id'])) {
     redirect('../login.php');
 }
 
-// Mengambil informasi peran pengguna
 $user_id = $_SESSION['user_id'];
 $query = "SELECT role FROM users WHERE id = ?";
 $stmt = $conn->prepare($query);
@@ -26,7 +24,6 @@ if ($user['role'] !== 'admin') {
     redirect('../user/dashboard.php');
 }
 
-// Get quick stats
 $totalUsers = $conn->query("SELECT COUNT(*) as count FROM users")->fetch_assoc()['count'];
 $totalEvents = $conn->query("SELECT COUNT(*) as count FROM events")->fetch_assoc()['count'];
 $totalRegistrations = $conn->query("SELECT COUNT(*) as count FROM registrations")->fetch_assoc()['count'];
@@ -49,11 +46,10 @@ $totalRegistrations = $conn->query("SELECT COUNT(*) as count FROM registrations"
 </style>
 <body class="bg-grey-100">
 
-<!-- Header -->
 <?php require '../includes/header.php'; ?>
 
 <div class="flex min-h-screen">
-    <!-- Sidebar -->
+  
     <div class="bg-gray-800 text-white w-64 py-6 flex-shrink-0">
         <div class="px-6">
             <h2 class="text-lg font-semibold">Admin Panel</h2>
@@ -87,14 +83,12 @@ $totalRegistrations = $conn->query("SELECT COUNT(*) as count FROM registrations"
         </nav>
     </div>
 
-    <!-- Main Content -->
     <div class="flex-1 p-8">
         <div class="mb-8">
             <h1 class="text-3xl font-bold text-white">Dashboard Overview</h1>
             <p class="text-pink">Welcome to your admin dashboard.</p>
         </div>
 
-        <!-- Stats Cards -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <div class="bg-white rounded-lg shadow p-6">
                 <div class="flex items-center">
@@ -131,7 +125,6 @@ $totalRegistrations = $conn->query("SELECT COUNT(*) as count FROM registrations"
             </div>
         </div>
 
-        <!-- Quick Actions -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div class="bg-white rounded-lg shadow p-6">
                 <h2 class="text-xl font-semibold mb-4">Event Management</h2>
@@ -159,7 +152,6 @@ $totalRegistrations = $conn->query("SELECT COUNT(*) as count FROM registrations"
     </div>
 </div>
 
-<!-- Footer -->
 <?php require '../includes/footer.php'; ?>
 
 </body>

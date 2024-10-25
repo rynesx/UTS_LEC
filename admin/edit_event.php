@@ -8,7 +8,6 @@ if ($id === 0) {
     die('Invalid event ID');
 }
 
-// Handle form submission
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $name = sanitize($_POST['name']);
     $date = $_POST['date'];
@@ -17,29 +16,27 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $description = sanitize($_POST['description']);
     $max_participants = intval($_POST['max_participants']);
 
-    // Get existing image path
+ 
     $stmt = $conn->prepare("SELECT image_path FROM events WHERE id = ?");
     $stmt->bind_param("i", $id);
     $stmt->execute();
     $result = $stmt->get_result();
     $event = $result->fetch_assoc();
     
-    $image_path = $event['image_path'];  // Keep the current image path
+    $image_path = $event['image_path'];  
 
-    // Handle image upload if a new one is provided
     if (isset($_FILES['image']) && $_FILES['image']['error'] == UPLOAD_ERR_OK) {
-        $upload_dir = '../uploads/events/';  // Change to the events folder
+        $upload_dir = '../uploads/events/';  
         if (!file_exists($upload_dir)) {
             mkdir($upload_dir, 0755, true);
         }
 
-        // Generate a unique filename
         $file_extension = pathinfo($_FILES["image"]["name"], PATHINFO_EXTENSION);
         $new_filename = uniqid() . '.' . $file_extension;
         $new_image_path = $upload_dir . $new_filename;
 
         if (move_uploaded_file($_FILES["image"]["tmp_name"], $new_image_path)) {
-            // Delete old image if exists
+        
             if ($event['image_path'] && file_exists($event['image_path'])) {
                 unlink($event['image_path']);
             }
@@ -49,7 +46,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
     }
 
-    // Update event
     $stmt = $conn->prepare("UPDATE events SET name = ?, date = ?, time = ?, location = ?, description = ?, max_participants = ?, image_path = ? WHERE id = ?");
     $stmt->bind_param("sssssssi", $name, $date, $time, $location, $description, $max_participants, $image_path, $id); 
 
@@ -61,7 +57,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 }
 
-// Get event data
 $stmt = $conn->prepare("SELECT * FROM events WHERE id = ?");
 $stmt->bind_param("i", $id);
 $stmt->execute();

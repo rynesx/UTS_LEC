@@ -3,7 +3,6 @@ session_start();
 require '../includes/db.php';
 require '../includes/functions.php';
 
-// Validasi admin
 if (!isset($_SESSION['user_id'])) {
     redirect('../login.php');
 }
@@ -19,7 +18,6 @@ if ($user['role'] !== 'admin') {
     redirect('../user/dashboard.php');
 }
 
-// Mengambil daftar event
 $events = $conn->query("SELECT * FROM events ORDER BY date DESC");
 ?>
 
@@ -104,7 +102,7 @@ $events = $conn->query("SELECT * FROM events ORDER BY date DESC");
                         </td>
                     </tr>
                     <?php endwhile; ?>
-                </tbody>
+         </tbody>
             </table>
         </div>
     </div>
