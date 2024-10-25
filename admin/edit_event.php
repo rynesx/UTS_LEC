@@ -54,7 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $stmt->bind_param("sssssssi", $name, $date, $time, $location, $description, $max_participants, $image_path, $id); 
 
     if ($stmt->execute()) {
-        header('Location: view_registration.php');
+        header('Location: event_management.php');
         exit;
     } else {
         $error = "Error updating event: " . $stmt->error;
