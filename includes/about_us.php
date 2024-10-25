@@ -119,14 +119,14 @@ require_once 'header.php';
             $team_members = [
                 [
                     "name" => "Razhib Fauzul Haq",
-                    "role" => "President Director",
+                    "role" => "Front End Developer",
                     "description" => "I'm Razhib Fauzul Haq as President Director focused on creating responsive, user-friendly web interfaces using modern technologies.",
                     "image" => "../image/RZB.jpg"
                 ],
                 [
                     "name" => "Ryan Erlanda Steffen",
-                    "role" => "CEO & Founder",
-                    "description" => "I'm Ryan Erlanda Steffen as CEO skilled in building robusta, provide solution, inovation, scalable systems and creating user-friendly interfaces.",
+                    "role" => "Full Stack Developer",
+                    "description" => "I'm Ryan Erlanda Steffen as CEO skilled in building robus, provide solution, inovation, scalable systems and creating user-friendly interfaces.",
                     "image" => "../image/RYN.jpg"
                 ],
                 [
@@ -137,8 +137,8 @@ require_once 'header.php';
                 ],
                 [
                     "name" => "Muhammad Abidzar Prayitno",
-                    "role" => "Clown",
-                    "description" => "I'm Muhammad Abidzar Prayitno as Clown siap menjadi badutmu",
+                    "role" => "Back-End Developer",
+                    "description" => "I'm Muhammad Abidzar Prayitno as Backend will make the best Database.",
                     "image" => "../image/ABZ.jpg"
                 ]
             ];
