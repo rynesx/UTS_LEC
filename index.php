@@ -19,16 +19,16 @@ require_once 'includes/header.php';
     </style>
 </head>
 <body class="min-h-screen">
-    <!-- Hero Section -->
+
     <div class="w-full flex items-center justify-center">
-        <!-- Background Image -->
+       
         <div class="absolute inset-0">
             <img src="image/bcg.jpg" alt="Event Play" class="w-full h-full object-cover">
-            <!-- Overlay -->
+         
             <div class="absolute inset-0 bg-black opacity-50"></div>
         </div>
 
-        <!-- Content -->
+     
         <div class="relative text-center text-white px-4 w-full">
             <h2 class="font-cursive text-4xl sm:text-5xl md:text-6xl mb-4">
                 Welcome to

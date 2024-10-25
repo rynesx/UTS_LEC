@@ -3,12 +3,12 @@ session_start();
 require '../includes/db.php';
 require '../includes/functions.php';
 
-// Check if user is logged in
+
 if (!isset($_SESSION['user_id'])) {
     redirect('../login.php');
 }
 
-// Fetching available events
+
 $events = $conn->query("SELECT * FROM events WHERE status = 'open'");
 ?>
 
@@ -18,7 +18,7 @@ $events = $conn->query("SELECT * FROM events WHERE status = 'open'");
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register for Event</title>
-    <link rel="stylesheet" href="path/to/tailwind.css"> <!-- Replace with your actual CSS path -->
+    <link rel="stylesheet" href="path/to/tailwind.css"> 
 </head>
 <body class="bg-gray-100">
     <div class="container mx-auto px-4 py-8">

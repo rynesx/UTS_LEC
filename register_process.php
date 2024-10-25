@@ -13,11 +13,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = $_POST['password'];
     $confirm_password = $_POST['confirm_password'];
 
-    $role = !empty($_POST['is_admin']) ? 'admin' : 'user'; // Tentukan peran berdasarkan checkbox
+    $role = !empty($_POST['is_admin']) ? 'admin' : 'user'; 
 
-    // Validasi dan lainnya...
-    
-    // Menyimpan ke database
+   
     $stmt = $conn->prepare("INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)");
-    $stmt->bind_param("ssss", $name, $email, $hashed_password, $role); // Sertakan role
+    $stmt->bind_param("ssss", $name, $email, $hashed_password, $role); 
 }

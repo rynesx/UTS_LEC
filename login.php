@@ -1,12 +1,12 @@
 <?php
 session_start();
-require_once 'includes/db.php'; // Koneksi ke database
-require_once 'includes/functions.php'; // Fungsi-fungsi
+require_once 'includes/db.php'; 
+require_once 'includes/functions.php'; 
 
 
-$errors = []; // Inisialisasi array untuk menyimpan error
+$errors = []; 
 
-// Handle login form submission
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
     $email = trim($_POST['email']);
     $password = $_POST['password'];
@@ -125,16 +125,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
             flex-direction: row;
             background-color: #fff;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            border-radius: 15px; /* Membuat card menjadi lebih lengkung */
+            border-radius: 15px; 
         }
 
         .card-back {
             display: flex;
-            flex-direction: row; /* Menjadikan elemen sebelah kiri dan kanan */
+            flex-direction: row; 
             background-color: #f9f9f9;
             transform: rotateY(180deg);
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            border-radius: 15px; /* Membuat card menjadi lebih lengkung */
+            border-radius: 15px; 
         }
 
         .login-box, .register-box {
@@ -155,7 +155,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
             align-items: center;
             text-align: center;
             padding: 40px;
-            border-radius: 15px; /* Membuat welcome box lengkung */
+            border-radius: 15px; 
         }
 
         .form-input {
@@ -167,34 +167,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
         }
 
         .btn-submit {
-            background-color: #7E60BF; /* Warna latar belakang tombol */
-            color: white; /* Warna teks tombol */
-            padding: 10px 20px; /* Padding tombol */
-            border: none; /* Menghapus border tombol */
-            border-radius: 50px; /* Membuat tombol menjadi bundar */
-            cursor: pointer; /* Mengubah kursor saat hover */
-            transition: all 0.3s ease; /* Transisi halus saat hover */
+            background-color: #7E60BF; 
+            color: white; 
+            padding: 10px 20px; 
+            border: none; 
+            border-radius: 50px; 
+            cursor: pointer; 
+            transition: all 0.3s ease; 
         }
 
         .btn-submit:hover {
-            background-color: white; /* Ubah latar belakang saat hover */
-            color: #7E60BF; /* Ubah warna teks saat hover */
-            border: 2px solid #7E60BF; /* Tambahkan border saat hover */
+            background-color: white; 
+            color: #7E60BF; 
+            border: 2px solid #7E60BF; 
         }
 
         .btn-signup, .btn-login {
-            background-color: white; /* Tombol menjadi putih */
+            background-color: white; 
             color: #7E60BF;
-            border-radius: 50px; /* Tombol menjadi bundar */
+            border-radius: 50px; 
             padding: 10px 20px;
-            border: 2px solid transparent; /* Border awal transparan */
+            border: 2px solid transparent; 
             cursor: pointer;
         }
 
         .btn-signup:hover, .btn-login:hover {
-            background-color: #7E60BF; /* Ubah latar belakang saat hover */
-            color: white; /* Ubah warna teks saat hover */
-            border: 2px solid white; /* Tambahkan border putih saat hover */
+            background-color: #7E60BF; 
+            color: white; 
+            border: 2px solid white; 
         }
 
         .forgot-password {
@@ -209,11 +209,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
         }
 
         .card-back .welcome-box {
-            order: 2; /* Menempatkan welcome box ke sisi kanan */
+            order: 2; 
         }
 
         .card-back .register-box {
-            order: 1; /* Menempatkan register box ke sisi kiri */
+            order: 1; 
         }
     </style>
 </head>
@@ -222,18 +222,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
 <div class="login-container">
     <div class="card">
         <div class="card-inner">
-            <!-- Login Page (Card Front) -->
+            
             <div class="card-front">
                 <div class="login-box">
                     <h2>Welcome Back!</h2>
                     <p>Please log in to continue.</p>
-                    <form action="login.php" method="POST"> <!-- Mengarah ke login.php dengan metode POST -->
+                    <form action="login.php" method="POST"> 
                         <input type="email" name="email" placeholder="Email" class="form-input" required>
                         <input type="password" name="password" placeholder="Password" class="form-input" required>
-                        <p class="forgot-password" onclick="location.href='includes/forget_pw.php'">Forgot your password?</p> <!-- Mengarahkan ke forget_pw.php -->
-                        <button type="submit" name="login" class="btn-submit">Sign In</button> <!-- Menyertakan name "login" -->
+                        <p class="forgot-password" onclick="location.href='includes/forget_pw.php'">Forgot your password?</p>
+                        <button type="submit" name="login" class="btn-submit">Sign In</button> 
                     </form>
-                    <?php if (!empty($errors)): ?> <!-- Menampilkan kesalahan -->
+                    <?php if (!empty($errors)): ?> 
                         <div class="error-messages">
                             <?php foreach ($errors as $error): ?>
                                 <p style="color: red;"><?= htmlspecialchars($error) ?></p>
@@ -248,19 +248,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
                 </div>
             </div>
 
-            <!-- Register Page (Card Back) -->
+            
             <div class="card-back">
                 <div class="register-box">
                     <h2>Create an Account</h2>
                     <p>Fill in the form below to register.</p>
-                    <form action="login.php" method="POST"> <!-- Mengarah ke login.php dengan metode POST -->
+                    <form action="login.php" method="POST"> 
                         <input type="text" name="name" placeholder="Username" class="form-input" required>
                         <input type="email" name="email" placeholder="Email" class="form-input" required>
                         <input type="password" name="password" placeholder="Password" class="form-input" required>
                         <input type="password" name="confirm_password" placeholder="Confirm Password" class="form-input" required>
-                        <button type="submit" name="register" class="btn-submit">Register</button> <!-- Menyertakan name "register" -->
+                        <button type="submit" name="register" class="btn-submit">Register</button> 
                     </form>
-                    <?php if (!empty($errors)): ?> <!-- Menampilkan kesalahan -->
+                    <?php if (!empty($errors)): ?> 
                         <div class="error-messages">
                             <?php foreach ($errors as $error): ?>
                                 <p style="color: red;"><?= htmlspecialchars($error) ?></p>

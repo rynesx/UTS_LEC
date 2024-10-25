@@ -1,42 +1,42 @@
 <?php
-require_once 'includes/db.php';       // Connect to the database
-require_once 'includes/functions.php'; // Include functions
-require 'includes/header.php';    // Include header
+require_once 'includes/db.php';       
+require_once 'includes/functions.php'; 
+require 'includes/header.php';    
 
-$errors = []; // Array to hold errors
+$errors = []; 
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Sanitize and escape user inputs
-    $name = htmlspecialchars(sanitize(trim($_POST['name'])), ENT_QUOTES, 'UTF-8'); // Escape output
-    $email = htmlspecialchars(sanitize(trim($_POST['email'])), ENT_QUOTES, 'UTF-8'); // Escape output
-    $password = trim($_POST['password']); // Store password directly without escaping
-    $confirm_password = trim($_POST['confirm_password']); // Store password directly
+   
+    $name = htmlspecialchars(sanitize(trim($_POST['name'])), ENT_QUOTES, 'UTF-8'); 
+    $email = htmlspecialchars(sanitize(trim($_POST['email'])), ENT_QUOTES, 'UTF-8'); 
+    $password = trim($_POST['password']); 
+    $confirm_password = trim($_POST['confirm_password']); 
 
-    // Validate input
+   
     if (empty($name) || empty($email) || empty($password) || empty($confirm_password)) {
-        $errors[] = "All fields are required."; // Ensure all fields are filled
+        $errors[] = "All fields are required."; 
     } elseif ($password !== $confirm_password) {
-        $errors[] = "Passwords do not match."; // Error for non-matching passwords
+        $errors[] = "Passwords do not match."; 
     } else {
-        // Check if email already exists
+       
         $stmt = $conn->prepare("SELECT id FROM users WHERE email = ?");
         $stmt->bind_param("s", $email);
         $stmt->execute();
         $result = $stmt->get_result();
 
         if ($result->num_rows > 0) {
-            $errors[] = "Email already registered."; // If email is already registered
+            $errors[] = "Email already registered."; 
         } else {
             // Hash the password and save to the database
             $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-            $role = isset($_POST['is_admin']) ? 'admin' : 'user'; // Set role based on checkbox
+            $role = isset($_POST['is_admin']) ? 'admin' : 'user'; 
             $stmt = $conn->prepare("INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)");
             $stmt->bind_param("ssss", $name, $email, $hashed_password, $role);
             if ($stmt->execute()) {
-                header('Location: login.php'); // Redirect to login page after successful registration
+                header('Location: login.php'); 
                 exit();
             } else {
-                $errors[] = "Registration failed. Please try again."; // Error during registration
+                $errors[] = "Registration failed. Please try again."; 
             }
         }
     }
@@ -95,7 +95,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         .welcome-box {
             flex: 1;
-            background-color: #7E60BF; /* Warna latar belakang kanan */
+            background-color: #7E60BF; 
             color: white;
             display: flex;
             justify-content: center;
@@ -116,8 +116,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             padding: 10px;
             margin-bottom: 20px;
             border: 1px solid #ccc;
-            border-radius: 50px; /* Membuat input menjadi lonjong */
-            text-align: center;  /* Center text input */
+            border-radius: 50px; 
+            text-align: center;  
         }
 
         .btn-submit,
@@ -126,18 +126,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             color: white;
             padding: 10px 20px;
             border: none;
-            border-radius: 50px; /* Membuat tombol lonjong */
+            border-radius: 50px; 
             cursor: pointer;
             width: 100%;
             text-align: center;
-            transition: all 0.3s ease; /* Tambahkan transisi untuk smooth hover effect */
+            transition: all 0.3s ease; 
         }
 
         .btn-submit:hover {
         background-color: white;
         color: #9B7EBD;
-        border: 2px solid #9B7EBD; /* Menambahkan border saat hover */;
-        text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.3); /* Efek timbul pada hover */
+        border: 2px solid #9B7EBD; 
+        text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.3); 
     }
 
         .btn-signup {
@@ -153,7 +153,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         .btn-signup:hover {
             background-color: #7E60BF;
             color: white;
-            text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.3); /* Efek timbul pada hover */
+            text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.3); 
         }
 
         .error-message {
@@ -169,7 +169,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <body>
 
-<!-- Header -->
+
 <?php require_once 'includes/header.php'; ?>
 
 <div class="login-container">
@@ -205,7 +205,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 </div>
 
-<!-- Footer -->
+
 <?php require_once 'includes/footer.php'; ?>
 
 </body>

@@ -19,9 +19,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = sanitizeInput($_POST['email']);
     $profile_picture = '';
 
-    // Handle file upload
+   
     if (isset($_FILES['profile_picture']) && $_FILES['profile_picture']['error'] === UPLOAD_ERR_OK) {
-        // Set target directory for profile pictures
+       
         $target_dir = "../uploads/profile_pictures/";
         if (!file_exists($target_dir)) {
             mkdir($target_dir, 0755, true);
@@ -32,24 +32,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (!move_uploaded_file($_FILES["profile_picture"]["tmp_name"], $profile_picture)) {
             $errors[] = "Failed to upload image.";
         } else {
-            // Verify that the file was successfully uploaded
+          
             if (!file_exists($profile_picture)) {
                 $errors[] = "Image upload failed or file does not exist.";
             }
         }
     }
 
-    // Validate name and email
     if (empty($name) || empty($email)) {
         $errors[] = "Name and email are required.";
     }
 
-    // Validate email format
+  
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $errors[] = "Invalid email format.";
     }
 
-    // If no errors, proceed to update the database
+   
     if (empty($errors)) {
         $update_fields = ["name = ?", "email = ?"];
         $update_values = [$name, $email];
@@ -65,7 +64,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $result = dbQuery($query, $update_values);
 
         if ($result) {
-            // Update session and user data
+           
             $_SESSION['user_name'] = $name;
             $success_message = "Profile updated successfully.";
             $user['name'] = $name;
@@ -73,14 +72,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $user_profile_picture = !empty($profile_picture) ? $profile_picture : $user_profile_picture;
             $errors = [];
         } else {
-            // Failed to update profile, redirect to home
+           
             header("Location: ../index.php");
-            exit(); // Stop further script execution
+            exit(); 
         }
     } else {
-        // Validation errors, redirect to home
+        
         header("Location: ../index.php");
-        exit(); // Stop further script execution
+        exit(); 
     }
 }
 ?>

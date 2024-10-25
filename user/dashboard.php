@@ -3,12 +3,12 @@ session_start();
 require '../includes/db.php';
 require '../includes/functions.php';
 
-// Pastikan pengguna sudah login
+
 if (!isset($_SESSION['user_id'])) {
-    redirect('../login.php'); // Redirect jika tidak ada sesi
+    redirect('../login.php'); 
 }
 
-// Mengambil informasi pengguna
+
 $user_id = $_SESSION['user_id'];
 $query = "SELECT name FROM users WHERE id = ?";
 $stmt = $conn->prepare($query);
@@ -24,7 +24,7 @@ $user = $result->fetch_assoc();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Dashboard</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"> <!-- Ensure Tailwind CSS is connected -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"> 
     <style>
         body{
             background: linear-gradient(to left, #4A148C , pink);
@@ -36,7 +36,7 @@ $user = $result->fetch_assoc();
 </head>
 <body class="bg-gray-100">
 
-<!-- Header -->
+
 <?php require '../includes/header.php'; ?>
 
 <div class="dashboard-container">
@@ -54,7 +54,7 @@ $user = $result->fetch_assoc();
             </thead>
             <tbody>
     <?php
-    // Mengambil acara yang terdaftar oleh pengguna
+   
     $registrations = $conn->query("SELECT events.id, events.name, events.date, events.location FROM registrations INNER JOIN events ON registrations.event_id = events.id WHERE registrations.user_id = $user_id");
     
     if ($registrations->num_rows > 0) {
@@ -65,7 +65,7 @@ $user = $result->fetch_assoc();
         <td class="py-2 border-b border-gray-200"><?php echo htmlspecialchars(date('d M Y', strtotime($event['date']))); ?></td>
         <td class="py-2 border-b border-gray-200"><?php echo htmlspecialchars($event['location']); ?></td>
         <td class="py-2 border-b border-gray-200">
-            <!-- Form untuk redirect ke event_detail dengan event_id -->
+        
             <form action="../includes/event_detail.php" method="GET">
                 <input type="hidden" name="id" value="<?php echo htmlspecialchars($event['id']); ?>">
                 <button type="submit" class="bg-pink-500 text-white px-4 py-2 rounded hover:bg-blue-600">View Event</button>
@@ -83,7 +83,7 @@ $user = $result->fetch_assoc();
     </div>
 </div>
 
-<!-- Footer -->
+
 <?php require '../includes/footer.php'; ?>
 
 </body>
