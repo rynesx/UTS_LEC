@@ -46,7 +46,7 @@ function getUserRole() {
                         <li><a href="/UTS_LEC/user/logout.php" class="hover:underline">Logout</a></li>
                     <?php else: ?> 
                         <li><a href="/UTS_LEC/login.php" class="hover:underline">Login</a></li> 
-                        <li><a href="/UTS_LEC/register.php" class="hover:underline">Register</a></li> 
+                        <li><a href="/UTS_LEC/login.php" class="hover:underline">Register</a></li> 
                     <?php endif; ?> 
                 </ul> 
             </nav> 

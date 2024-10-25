@@ -105,6 +105,7 @@ require_once 'header.php';
     </style>
 </head>
 <body>
+
     <div class="container">
         <div class="about-header">
             <h1>About Us</h1>

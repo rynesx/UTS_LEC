@@ -10,7 +10,7 @@ $user = dbQuery("SELECT * FROM users WHERE id = ?", [$user_id])->fetch_assoc();
 
 $errors = [];
 $success_message = '';
-$user_profile_picture = isset($user['profile_picture']) ? $user['profile_picture'] : '../uploads/default.png';
+$user_profile_picture = isset($user['profile_picture']) ? $user['profile_picture'] : '../image/pp.png';
 $user_name = isset($user['name']) ? $user['name'] : '';
 $user_email = isset($user['email']) ? $user['email'] : '';
 
@@ -85,10 +85,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 ?>
 
-<!-- HTML Form -->
 <div class="flex justify-center mb-6">
-    <img src="<?php echo htmlspecialchars($user_profile_picture); ?>" alt="Profile Picture" class="rounded-full w-32 h-32 mb-4">
+    <img src="<?php echo htmlspecialchars($user_profile_picture); ?>" alt="Profile Picture" class="rounded-full w-32 h-32 mb-4 border-4 border-gray-300">
 </div>
+
 
 <?php if (!empty($errors)): ?>
     <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
