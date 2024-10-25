@@ -51,7 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     // Update event
     $stmt = $conn->prepare("UPDATE events SET name = ?, date = ?, time = ?, location = ?, description = ?, max_participants = ?, image_path = ? WHERE id = ?");
-    $stmt->bind_param("ssssssssi", $name, $date, $time, $location, $description, $max_participants, $image_path, $id); 
+    $stmt->bind_param("sssssssi", $name, $date, $time, $location, $description, $max_participants, $image_path, $id); 
 
     if ($stmt->execute()) {
         header('Location: view_registration.php');
@@ -249,7 +249,7 @@ if (!$event) {
 
             <div class="button-group">
                 <button type="submit">Update Event</button>
-                <a href="view_registration.php" class="cancel-button">Cancel</a>
+                <a href="event_management.php" class="cancel-button">Cancel</a>
             </div>
         </form>
     </div>
