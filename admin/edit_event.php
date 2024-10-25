@@ -14,7 +14,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $date = $_POST['date'];
     $time = $_POST['time'];
     $location = sanitize($_POST['location']);
-    $address = sanitize($_POST['address']);  // Menambahkan alamat
     $description = sanitize($_POST['description']);
     $max_participants = intval($_POST['max_participants']);
 
@@ -51,8 +50,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 
     // Update event
-    $stmt = $conn->prepare("UPDATE events SET name = ?, date = ?, time = ?, location = ?, address = ?, description = ?, max_participants = ?, image_path = ? WHERE id = ?"); // Menambahkan address ke query
-    $stmt->bind_param("ssssssssi", $name, $date, $time, $location, $address, $description, $max_participants, $image_path, $id); // Menambahkan address ke bind_param
+    $stmt = $conn->prepare("UPDATE events SET name = ?, date = ?, time = ?, location = ?, description = ?, max_participants = ?, image_path = ? WHERE id = ?");
+    $stmt->bind_param("ssssssssi", $name, $date, $time, $location, $description, $max_participants, $image_path, $id); 
 
     if ($stmt->execute()) {
         header('Location: view_registration.php');
@@ -227,11 +226,7 @@ if (!$event) {
                     <div class="form-group">
                         <input type="text" name="location" placeholder="Location" value="<?php echo htmlspecialchars($event['location']); ?>" required>
                     </div>
-
-                    <!-- Menambahkan Input Alamat -->
-                    <div class="form-group">
-                        <input type="text" name="address" placeholder="Address" value="<?php echo htmlspecialchars($event['address']); ?>" required>
-                    </div>
+                    
                 </div>
 
                 <div class="right-column">
