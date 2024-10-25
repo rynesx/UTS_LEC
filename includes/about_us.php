@@ -119,26 +119,26 @@ require_once 'header.php';
             $team_members = [
                 [
                     "name" => "Razhib Fauzul Haq",
-                    "role" => "Front-End Developer",
-                    "description" => "I'm Razhib Fauzul Haq as Front-End Developer focused on creating responsive, user-friendly web interfaces using modern technologies.",
+                    "role" => "President Director",
+                    "description" => "I'm Razhib Fauzul Haq as President Director focused on creating responsive, user-friendly web interfaces using modern technologies.",
                     "image" => "../image/RZB.jpg"
                 ],
                 [
                     "name" => "Ryan Erlanda Steffen",
-                    "role" => "Back-End & Front-End Developer",
-                    "description" => "I'm Ryan Erlanda Steffen as versatile Back-End and Front-End Developer skilled in building robust, provide solution, inovation, scalable systems and creating user-friendly interfaces.",
+                    "role" => "CEO & Founder",
+                    "description" => "I'm Ryan Erlanda Steffen as CEO skilled in building robusta, provide solution, inovation, scalable systems and creating user-friendly interfaces.",
                     "image" => "../image/RYN.jpg"
                 ],
                 [
                     "name" => "Ghiyats Nabil Rabbani",
-                    "role" => "Back-End Developer",
-                    "description" => "I'm Ghiyats Nabil Rabbani, a Back-End Developer specializing in building secure and efficient web applications, with a focus on database security and server architecture.",
+                    "role" => "Full Stack Developer",
+                    "description" => "I'm Ghiyats Nabil Rabbani, as a Full Stack Developer specializing in building secure and efficient web applications, with a focus on database security and server architecture.",
                     "image" => "../image/NBL.jpg"
                 ],
                 [
                     "name" => "Muhammad Abidzar Prayitno",
-                    "role" => "Back-End Developer",
-                    "description" => "I'm Muhammad Abidzar Prayitno as Back-End Developer siap menjadi badutmu",
+                    "role" => "Clown",
+                    "description" => "I'm Muhammad Abidzar Prayitno as Clown siap menjadi badutmu",
                     "image" => "../image/ABZ.jpg"
                 ]
             ];

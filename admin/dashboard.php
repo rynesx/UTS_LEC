@@ -42,7 +42,12 @@ $totalRegistrations = $conn->query("SELECT COUNT(*) as count FROM registrations"
     <!-- Font Awesome untuk icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
-<body class="bg-gray-100">
+<style>
+   body{
+            background: linear-gradient(to bottom, #4A148C , pink);
+        }
+</style>
+<body class="bg-grey-100">
 
 <!-- Header -->
 <?php require '../includes/header.php'; ?>
@@ -85,8 +90,8 @@ $totalRegistrations = $conn->query("SELECT COUNT(*) as count FROM registrations"
     <!-- Main Content -->
     <div class="flex-1 p-8">
         <div class="mb-8">
-            <h1 class="text-3xl font-bold text-gray-800">Dashboard Overview</h1>
-            <p class="text-gray-600">Welcome to your admin dashboard.</p>
+            <h1 class="text-3xl font-bold text-white">Dashboard Overview</h1>
+            <p class="text-pink">Welcome to your admin dashboard.</p>
         </div>
 
         <!-- Stats Cards -->

@@ -26,6 +26,9 @@ $user = $result->fetch_assoc();
     <title>User Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"> <!-- Ensure Tailwind CSS is connected -->
     <style>
+        body{
+            background: linear-gradient(to left, #4A148C , pink);
+        }
         .dashboard-container {
             padding: 20px;
         }

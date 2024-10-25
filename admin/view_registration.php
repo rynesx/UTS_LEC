@@ -32,9 +32,14 @@ require_once '../includes/header.php';
     <title>Upcoming Concerts</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
+<style>
+    body{
+            background: linear-gradient(to left, #4A148C , purple);
+        }
+</style>
 <body class="bg-gray-100">
     <div class="container mx-auto px-4 py-8">
-        <h2 class="text-3xl font-bold mb-6">Upcoming Concerts</h2>
+        <h2 class="text-3xl font-bold mb-6 text-white">Upcoming Concerts</h2>
 
         <!-- Search Form -->
         <div class="mb-6 flex justify-end">

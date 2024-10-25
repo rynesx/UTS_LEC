@@ -28,10 +28,13 @@ function getUserRole() {
     <script src="https://cdn.tailwindcss.com"></script> 
     <link rel="stylesheet" href="/css/styles.css"> 
 </head> 
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap');
+</style>
 <body class="bg-gray-100 m-0 p-0">
     <header class="bg-purple-900 text-white p-4"> <!-- Ubah padding menjadi 0 -->
         <div class="container mx-auto flex justify-between items-center"> 
-            <h1 class="text-2xl font-bold"><?php echo SITE_NAME; ?></h1> 
+            <h1 class="text-2xl font-Dancing Script"><?php echo SITE_NAME; ?></h1> 
             <nav> 
                 <ul class="flex space-x-4"> 
                     <li><a href="/UTS_LEC/index.php" class="hover:underline">Home</a></li>
@@ -52,4 +55,4 @@ function getUserRole() {
             </nav> 
         </div> 
     </header> 
-    <main class="container mx-auto mt-0">
+    <main class="container mx-auto mt-4">

@@ -2,7 +2,7 @@
 session_start();
 require_once 'includes/db.php'; // Koneksi ke database
 require_once 'includes/functions.php'; // Fungsi-fungsi
-require 'includes/header.php'; // Header
+
 
 $errors = []; // Inisialisasi array untuk menyimpan error
 

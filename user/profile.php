@@ -74,16 +74,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $errors = [];
         } else {
             // Failed to update profile, redirect to home
-            header("Location: ../includes/about_us.php");
+            header("Location: ../index.php");
             exit(); // Stop further script execution
         }
     } else {
         // Validation errors, redirect to home
-        header("Location: ../includes/about_us.php");
+        header("Location: ../index.php");
         exit(); // Stop further script execution
     }
 }
 ?>
+<style>
+    body{
+            background: linear-gradient(to bottom, #4A148C , pink);
+        }
+</style>
 
 <div class="flex justify-center mb-6">
     <img src="<?php echo htmlspecialchars($user_profile_picture); ?>" alt="Profile Picture" class="rounded-full w-32 h-32 mb-4 border-4 border-gray-300">
@@ -119,7 +124,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <label for="email" class="block mb-2">Email</label>
         <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($user_email); ?>" required class="w-full px-3 py-2 border rounded">
     </div>
-    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Update Profile</button> 
+    <button type="submit" class="bg-pink-500 text-white px-4 py-2 rounded hover:bg-blue-600">Update Profile</button> 
 </form>
 
 <form action="../includes/forget_pw.php" method="GET" class="max-w-md mx-auto mt-4">

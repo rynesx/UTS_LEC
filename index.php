@@ -20,16 +20,16 @@ require_once 'includes/header.php';
 </head>
 <body class="min-h-screen">
     <!-- Hero Section -->
-    <div class="relative min-h-screen flex items-center justify-center">
+    <div class="w-full flex items-center justify-center">
         <!-- Background Image -->
         <div class="absolute inset-0">
-            <img src="image/BCG.jpg" alt="Restaurant Background" class="w-full h-full object-cover">
+            <img src="image/bcg.jpg" alt="Event Play" class="w-full h-full object-cover">
             <!-- Overlay -->
             <div class="absolute inset-0 bg-black opacity-50"></div>
         </div>
 
         <!-- Content -->
-        <div class="relative text-center text-white px-4">
+        <div class="relative text-center text-white px-4 w-full">
             <h2 class="font-cursive text-4xl sm:text-5xl md:text-6xl mb-4">
                 Welcome to
             </h2>
@@ -43,5 +43,3 @@ require_once 'includes/header.php';
     </div>
 </body>
 </html>
-
-<?php require_once 'includes/footer.php'; ?>
