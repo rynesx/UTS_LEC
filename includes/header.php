@@ -1,10 +1,10 @@
 <?php if (session_status() == PHP_SESSION_NONE) { 
-    session_start(); // Pastikan session_start hanya dipanggil sekali 
+    session_start(); 
 } 
-require_once 'db.php'; // Menghubungkan ke database 
-require_once 'functions.php'; // Mengambil fungsi-fungsi
+require_once 'db.php'; 
+require_once 'functions.php'; 
 
-// Fungsi untuk mengecek role user
+
 function getUserRole() {
     global $conn;
     if (isset($_SESSION['user_id'])) {

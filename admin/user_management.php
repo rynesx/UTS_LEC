@@ -3,7 +3,6 @@ session_start();
 require '../includes/db.php';
 require '../includes/functions.php';
 
-// Validasi admin
 if (!isset($_SESSION['user_id'])) {
     redirect('../login.php');
 }
@@ -19,7 +18,6 @@ if ($user['role'] !== 'admin') {
     redirect('../user/dashboard.php');
 }
 
-// Mengambil daftar users
 $users = $conn->query("SELECT * FROM users WHERE id != $user_id ORDER BY created_at DESC");
 ?>
 

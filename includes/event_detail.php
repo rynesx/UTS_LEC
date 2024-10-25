@@ -3,7 +3,7 @@ require_once 'header.php';
 require_once 'db.php';
 require_once 'functions.php';
 
-// Check if event ID is provided and valid
+
 if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
     header('Location: ../index.php');
     exit();
@@ -12,7 +12,7 @@ if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
 $event_id = intval($_GET['id']);
 $event = dbQuery("SELECT * FROM events WHERE id = ?", [$event_id])->fetch_assoc();
 
-// Check if the event exists
+
 if (!$event) {
     header('Location: ../index.php');
     exit();
@@ -22,9 +22,8 @@ $is_registered = false;
 $registration_error = '';
 $registration_success = '';
 
-// Check if the user is logged in
 if (isLoggedIn()) {
-    // Check if the user has already registered
+   
     $user_id = $_SESSION['user_id'];
     $registration_check = dbQuery("SELECT * FROM registrations WHERE event_id = ? AND user_id = ?", [$event_id, $user_id])->fetch_assoc();
     
@@ -32,19 +31,18 @@ if (isLoggedIn()) {
         $is_registered = true;
     }
 
-    // Handle registration or unregistration
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $action = $_POST['action'] ?? '';
         
         try {
             if ($action === 'register') {
-                // Check if there are available slots
+               
                 if ($event['current_participants'] < $event['max_participants']) {
-                    // Register user
+                   
                     $register_query = "INSERT INTO registrations (event_id, user_id) VALUES (?, ?)";
                     dbInsert($register_query, [$event_id, $user_id]);
                     
-                    // Update current participants in the events table
+                   
                     $update_query = "UPDATE events SET current_participants = current_participants + 1 WHERE id = ?";
                     dbInsert($update_query, [$event_id]);
                     
@@ -54,11 +52,10 @@ if (isLoggedIn()) {
                     $registration_error = 'No available slots for this event.';
                 }
             } elseif ($action === 'unregister') {
-                // Unregister user
+            
                 $unregister_query = "DELETE FROM registrations WHERE event_id = ? AND user_id = ?";
                 dbInsert($unregister_query, [$event_id, $user_id]);
-                
-                // Update current participants in the events table
+            
                 $update_query = "UPDATE events SET current_participants = current_participants - 1 WHERE id = ?";
                 dbInsert($update_query, [$event_id]);
                 
@@ -74,7 +71,6 @@ if (isLoggedIn()) {
 
 <h2 class="text-3xl font-bold mb-6"><?php echo htmlspecialchars($event['name']); ?></h2>
 
-<!-- Display registration messages -->
 <?php if ($registration_error): ?>
     <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
         <?php echo htmlspecialchars($registration_error); ?>
@@ -88,9 +84,9 @@ if (isLoggedIn()) {
 <?php endif; ?>
 
 <div class="bg-white rounded-lg shadow-md overflow-hidden">
-    <!-- Image display -->
+
     <?php
-    // Check if image path exists
+   
     if (!empty($event['image_path'])) {
         $image_path = '../uploads/events/' . basename($event['image_path']);
         error_log("Cek path gambar: " . $image_path);

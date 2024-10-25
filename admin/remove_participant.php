@@ -3,7 +3,6 @@ session_start();
 require '../includes/db.php';
 require '../includes/functions.php';
 
-// Validasi admin
 if (!isset($_SESSION['user_id'])) {
     redirect('../login.php');
 }
@@ -22,12 +21,10 @@ if ($user['role'] !== 'admin') {
 $event_id = $_GET['event_id'];
 $participant_id = $_GET['user_id'];
 
-// Hapus peserta dari event
 $stmt = $conn->prepare("DELETE FROM registrations WHERE event_id = ? AND user_id = ?");
 $stmt->bind_param("ii", $event_id, $participant_id);
 $stmt->execute();
 
-// Set pesan berhasil dan redirect
 $_SESSION['message'] = "Participant removed successfully.";
 redirect("view_participants.php?event_id=$event_id");
 ?>

@@ -1,6 +1,6 @@
 <?php
-require_once '../includes/db.php'; // Pastikan ada koneksi ke database
-require_once '../includes/functions.php'; // Memasukkan file dengan fungsi sanitizeInput
+require_once '../includes/db.php';
+require_once '../includes/functions.php'; 
 
 $errors = [];
 $success_message = '';
@@ -10,7 +10,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $confirm_password = $_POST['confirm_password'];
     $token = sanitizeInput($_POST['token']);
 
-    // Validasi token
+    
     $current_time = date('Y-m-d H:i:s');
     $reset_token = dbQuery("SELECT * FROM email_reset_tokens WHERE token = ? AND expiration_time > ?", [$token, $current_time])->fetch_assoc();
 
@@ -26,13 +26,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $hashed_password = password_hash($password, PASSWORD_DEFAULT);
         dbQuery("UPDATE users SET password = ? WHERE email = ?", [$hashed_password, $reset_token['email']]);
 
-        // Hapus token yang telah digunakan
+    
         dbQuery("DELETE FROM email_reset_tokens WHERE token = ?", [$token]);
 
-        // Set success message
+   
         $success_message = "Your password has been reset successfully. Redirecting to login page...";
 
-        // Redirect ke halaman login setelah beberapa detik
+        
         header("refresh:5;url=../login.php");
     }
 }

@@ -5,7 +5,6 @@ error_reporting(E_ALL);
 require_once '../includes/db.php';
 require_once '../includes/functions.php';
 
-// Handle search functionality
 $search_query = '';
 if (isset($_GET['search'])) {
     $search_query = sanitizeInput($_GET['search']);
@@ -14,7 +13,6 @@ if (isset($_GET['search'])) {
     $events = dbQuery("SELECT * FROM events WHERE status = 'open' ORDER BY date ASC");
 }
 
-// Debug: Print events data
 if ($events) {
     error_log("Found " . $events->num_rows . " events");
 } else {
@@ -120,7 +118,6 @@ require_once '../includes/header.php';
 
     <?php require_once '../includes/footer.php'; ?>
 
-    <!-- Debug Information (remove in production) -->
     <?php if (isset($_GET['debug'])): ?>
     <div class="container mx-auto px-4 py-8 bg-gray-200 mt-8">
         <h3 class="text-xl font-bold mb-4">Debug Information</h3>

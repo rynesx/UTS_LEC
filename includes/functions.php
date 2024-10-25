@@ -1,19 +1,19 @@
 <?php
 if (session_status() == PHP_SESSION_NONE) {
-    session_start(); // Memulai sesi hanya jika belum ada sesi yang aktif
+    session_start(); 
 }
 
-define('SITE_NAME', 'EventPlay'); // Definisikan nama situs
+define('SITE_NAME', 'EventPlay'); 
 
 function sanitize($data) {
-    // Menggunakan htmlspecialchars untuk mencegah XSS
+   
     return htmlspecialchars($data, ENT_QUOTES, 'UTF-8');
 }
 
 function sanitizeInput($data) {
     $data = trim($data);
     $data = stripslashes($data);
-    return sanitize($data); // Menggunakan fungsi sanitize untuk melakukan sanitasi lebih lanjut
+    return sanitize($data); 
 }
 
 function redirectIfNotLoggedIn() {
@@ -29,42 +29,42 @@ function redirect($url) {
 }
 
 function isLoggedIn() {
-    return isset($_SESSION['user_id']); // Memeriksa jika pengguna sudah login
-}
+    return isset($_SESSION['user_id']); 
+
 
 function dbInsert($query, $params = []) {
     global $conn;
 
-    // Pastikan query tidak kosong sebelum dilanjutkan
+
     if (empty($query)) {
         die("Query is required.");
     }
 
     $stmt = $conn->prepare($query);
     if ($stmt === false) {
-        error_log("Error preparing query: " . $conn->error); // Log error untuk audit
+        error_log("Error preparing query: " . $conn->error); 
         die("Error preparing query.");
     }
 
-    // Binding parameter dengan validasi tipe data
+   
     if (!empty($params)) {
-        $types = str_repeat('s', count($params)); // Asumsikan semua parameter adalah string
+        $types = str_repeat('s', count($params)); 
         if (!$stmt->bind_param($types, ...$params)) {
-            error_log("Error binding parameters: " . $stmt->error); // Log error untuk audit
+            error_log("Error binding parameters: " . $stmt->error); 
             die("Error binding parameters.");
         }
     }
-
-    // Eksekusi dan pemeriksaan hasil
+}
+  
     if (!$stmt->execute()) {
-        error_log("Error executing query: " . $stmt->error); // Log error
+        error_log("Error executing query: " . $stmt->error); 
         die("Error executing query.");
     }
 
-    return $stmt->affected_rows > 0;  // Mengembalikan true jika ada baris yang terpengaruh
+    return $stmt->affected_rows > 0; 
 }
 
-// Pengaturan untuk mencegah sql injection
+
 function safeQuery($sql, $params) {
     global $conn;
 
@@ -74,9 +74,9 @@ function safeQuery($sql, $params) {
         die("Error preparing statement");
     }
 
-    // Binding parameter
+   
     if (!empty($params)) {
-        $types = str_repeat('s', count($params)); // Mengasumsikan parameter string
+        $types = str_repeat('s', count($params)); 
         if (!$stmt->bind_param($types, ...$params)) {
             error_log("Error binding parameters: " . $stmt->error);
             die("Error binding parameters");
@@ -89,6 +89,6 @@ function safeQuery($sql, $params) {
         die("Error executing query");
     }
 
-    return $stmt->get_result(); // Mengembalikan hasil untuk selanjutnya digunakan
+    return $stmt->get_result(); 
 }
 ?>

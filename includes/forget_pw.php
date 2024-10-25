@@ -1,39 +1,36 @@
 <?php
-// Include file database dan fungsi
 require_once '../includes/db.php';
 require_once '../includes/functions.php';
 
 $errors = [];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Sanitasi input email dari form
+
     $email = sanitizeInput($_POST['email']);
 
-    // Cek jika email terdaftar di database
+
     $query = dbQuery("SELECT * FROM users WHERE email = ?", [$email]);
     $user = $query->fetch_assoc();
 
     if ($user) {
-        // Generate token acak untuk reset password
+    
         $token = bin2hex(random_bytes(16));
 
-        // Simpan token dan waktu kedaluwarsa di database
+    
         $expiration_time = date('Y-m-d H:i:s', strtotime('+30 minutes'));
         dbQuery("INSERT INTO email_reset_tokens (email, token, expiration_time) VALUES (?, ?, ?) 
                 ON DUPLICATE KEY UPDATE token = ?, expiration_time = ?", 
                 [$email, $token, $expiration_time, $token, $expiration_time]);
 
-        // Redirect ke halaman reset password dengan token
+      
         header("Location: reset_pw.php?token=" . $token);
         exit();
     } else {
-        // Jika email tidak ditemukan, tampilkan error
+      
         $errors[] = "Email not found. Please check again.";
     }
 }
 ?>
-
-<!-- HTML dan CSS untuk tampilan form lupa password -->
 <style>
     body {
         font-family: 'Arial', sans-serif;
@@ -196,12 +193,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <div class="forgot-container">
     <div class="forgot-form">
-        <!-- Bagian kiri untuk reset password -->
+       
         <div class="forgot-box">
             <h2>Forgot Password</h2>
             <p>Enter your registered email</p>
 
-            <!-- Tampilkan error jika ada -->
+           
             <?php if (!empty($errors)): ?>
                 <div class="error-message">
                     <ul>
@@ -212,14 +209,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
             <?php endif; ?>
 
-            <!-- Form untuk email -->
             <form method="POST" action="">
                 <input type="email" id="email" name="email" placeholder="Email" required class="form-input">
                 <button type="submit" class="btn-submit">Reset Password</button>
             </form>
         </div>
 
-        <!-- Bagian kanan -->
         <div class="welcome-box">
             <h2>Remember Password?</h2>
             <p>If you remember your password, please login with your personal info</p>

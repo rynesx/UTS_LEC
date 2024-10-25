@@ -3,12 +3,10 @@ session_start();
 require '../includes/db.php';
 require '../includes/functions.php';
 
-// Validasi admin
 if (!isset($_SESSION['user_id'])) {
     redirect('../login.php');
 }
 
-// Mengambil user_id dan role
 $user_id = $_SESSION['user_id'];
 $stmt = $conn->prepare("SELECT role FROM users WHERE id = ?");
 $stmt->bind_param("i", $user_id);
@@ -20,10 +18,8 @@ if ($user['role'] !== 'admin') {
     redirect('../admin/dashboard.php');
 }
 
-// Ambil event ID dari query parameter dan validasi
 $event_id = isset($_GET['event_id']) ? intval($_GET['event_id']) : 0;
 
-// Ambil data peserta event
 $stmt = $conn->prepare("SELECT u.id, u.name, u.email FROM registrations ep
                         JOIN users u ON ep.user_id = u.id
                         WHERE ep.event_id = ?");
